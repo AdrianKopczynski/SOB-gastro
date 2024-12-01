@@ -2,7 +2,7 @@ package pl.pjatk.SOZ_Gastro.Controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.pjatk.SOZ_Gastro.CoreService;
+import pl.pjatk.SOZ_Gastro.Services.CoreService;
 
 @RestController
 @RequestMapping("")

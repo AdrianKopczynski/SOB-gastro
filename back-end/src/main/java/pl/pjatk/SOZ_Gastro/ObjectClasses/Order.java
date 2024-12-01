@@ -1,13 +1,10 @@
 package pl.pjatk.SOZ_Gastro.ObjectClasses;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.time.Instant;
 
@@ -17,21 +14,25 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private Instant orderTime;
-    private String tempOrder;   //tymczasowo zamówienie
+    private int userId;
+    private Instant createdAt;
+    private Instant closedAt;
+    private String comment;
     private int tableID;    //ID stolika zamówienia
+
+
 
     //TODO Uzgodnić sposób przechowywania produktów w zamówieniu
 
     public Order()
     {
-        orderTime = Instant.now();
+        createdAt = Instant.now();
 
     }
 
     public Order(int tableID)
     {
-        orderTime = Instant.now();
+        createdAt = Instant.now();
         this.tableID = tableID;
     }
 
@@ -39,15 +40,8 @@ public class Order {
         return id;
     }
 
-    public Instant getOrderTime() {
-        return orderTime;
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
-    public String getTempOrder() {
-        return tempOrder;
-    }
-
-    public void setTempOrder(String tempOrder) {
-        this.tempOrder = tempOrder;
-    }
-}
+   }
