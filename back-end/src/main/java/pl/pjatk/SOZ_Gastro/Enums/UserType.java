@@ -1,4 +1,4 @@
-package pl.pjatk.SOZ_Gastro.Models;
+package pl.pjatk.SOZ_Gastro.Enums;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
