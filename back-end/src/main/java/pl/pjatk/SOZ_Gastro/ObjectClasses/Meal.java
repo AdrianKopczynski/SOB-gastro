@@ -7,7 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import pl.pjatk.SOZ_Gastro.Enums.MealTypes;
+
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "meals")
@@ -16,9 +17,9 @@ public class Meal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @Enumerated(EnumType.STRING)
-    private MealTypes type;
-    private String comment;
+    private int categoryId;
+    private BigDecimal price;
+
 
     //Tutaj ewentualnie dodać liste używanych produktów
 }

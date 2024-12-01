@@ -1,4 +1,4 @@
-package pl.pjatk.SOZ_Gastro;
+package pl.pjatk.SOZ_Gastro.Services;
 
 import org.springframework.stereotype.Service;
 
