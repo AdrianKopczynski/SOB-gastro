@@ -5,7 +5,7 @@ import pl.pjatk.SOZ_Gastro.Enums.UserType;
 
 @Entity
 @Table(name="user")
-public class User extends Meal {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
