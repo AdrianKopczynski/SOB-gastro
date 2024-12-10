@@ -9,7 +9,7 @@ import pl.pjatk.SOZ_Gastro.Services.UserService;
 import java.util.List;
 
 @RestController
-@RequestMapping("User")
+@RequestMapping("/user")
 public class UserController
 {
 

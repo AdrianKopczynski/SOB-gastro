@@ -1,10 +1,6 @@
 package pl.pjatk.SOZ_Gastro.ObjectClasses;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.Instant;
 
@@ -13,12 +9,15 @@ import java.time.Instant;
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    private int userId;
-    private Instant createdAt;
-    private Instant closedAt;
+    private Long id;
+    private Long userId;             //ID usera, który stworzył zamówienie
+    private Instant createdAt;      //timestamp stworzenia zamówienia
+    private Instant closedAt;       //timestamp zamknięcia zamówienia
+                                    //Jeśli closedAt = 0; to zamówienie jest otwarte
     private String comment;
-    private int tableID;    //ID stolika zamówienia
+    @ManyToOne
+    @JoinColumn(name="tabletop_id", nullable = false)
+    private Tabletop tabletop;
 
 
 
@@ -27,16 +26,25 @@ public class Order {
     public Order()
     {
         createdAt = Instant.now();
-
     }
 
-    public Order(int tableID)
+    public Order(Tabletop tabletop)
     {
         createdAt = Instant.now();
-        this.tableID = tableID;
+        this.tabletop = tabletop;
     }
 
-    public int getId() {
+    public Order(Long[] mealID, Tabletop tabletop)
+    {
+        createdAt = Instant.now();
+        this.tabletop = tabletop;
+        for (Long e : mealID)
+        {
+            OrderMeal orderMeal = new OrderMeal(e,this.id,"");
+        }
+    }
+
+    public Long getId() {
         return id;
     }
 
