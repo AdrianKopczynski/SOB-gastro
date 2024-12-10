@@ -1,11 +1,8 @@
 package pl.pjatk.SOZ_Gastro.Services;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
-import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundByIdException;
-import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundByUsernameException;
+import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundException;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Repositories.UserRepository;
 import pl.pjatk.SOZ_Gastro.Exceptions.BadRequestException;
@@ -40,28 +37,39 @@ public class UserService
         return userRepository.save(user);
     }
 
-    public User getByUsername(String username) throws UserNotFoundByUsernameException
+    public User getByUsername(String username) throws UserNotFoundException
     {
         if (username == null || username.trim().isEmpty())
         {
             throw new IllegalArgumentException("Username cannot be null or empty");
         }
 
-        return this.userRepository.findByUsername(username).orElseThrow(()
-                -> new UserNotFoundByUsernameException(username));
+        return this.userRepository.findByUsername(username).orElseThrow(() ->
+                new UserNotFoundException("User with username " + username + " not found"));
     }
 
-    public User getById(Long id) throws UserNotFoundByIdException
+    public User getByLoginPin(String loginPin) throws UserNotFoundException
+    {
+        if (loginPin == null)
+        {
+            throw new IllegalArgumentException("Login pin cannot be null");
+        }
+        return this.userRepository.findByLoginPin(loginPin).orElseThrow(() ->
+                new UserNotFoundException("user with given login pin does net exist"));
+
+    }
+
+    public User getById(Long id) throws UserNotFoundException
     {
         if (id == null)
         {
             throw new IllegalArgumentException("Id cannot be null");
         }
         return this.userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundByIdException(id));
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
-    public void deleteUserById(Long id) throws UserNotFoundByIdException
+    public void deleteUserById(Long id) throws UserNotFoundException
     {
         if (id == null)
         {
@@ -73,7 +81,7 @@ public class UserService
 
     public List<User>  getAll(){return this.userRepository.findAll();}
 
-    public void deleteUserByUsername(String username) throws UserNotFoundByUsernameException
+    public void deleteUserByUsername(String username) throws UserNotFoundException
     {
         if (username == null || username.trim().isEmpty())
         {

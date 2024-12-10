@@ -32,6 +32,12 @@ public class UserController
         return ResponseEntity.ok().body(this.userService.getById(id));
     }
 
+    @GetMapping("/getUserByPin/{loginPin}")
+    public ResponseEntity<User> getUserByLoginPin(@PathVariable("loginPin") String loginPin)
+    {
+        return ResponseEntity.ok().body(this.userService.getByLoginPin(loginPin));
+    }
+
     @GetMapping("/getUserByUsername/{username}")
     public ResponseEntity<User> getUserByUsername(@PathVariable("username") String username)
     {

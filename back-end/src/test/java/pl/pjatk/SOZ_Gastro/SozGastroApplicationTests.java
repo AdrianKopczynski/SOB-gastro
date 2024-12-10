@@ -3,7 +3,7 @@ package pl.pjatk.SOZ_Gastro;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundByUsernameException;
+import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundException;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.UserService;
 
@@ -22,7 +22,7 @@ class SozGastroApplicationTests {
 		try {
 			User user = userService.getById(1L);
 			System.out.println("User found: " + user);
-		} catch (UserNotFoundByUsernameException e) {
+		} catch (UserNotFoundException e) {
 			System.out.println("User not found");
 		} catch (IllegalArgumentException e) {
 			System.out.println("Invalid id: " + e.getMessage());
