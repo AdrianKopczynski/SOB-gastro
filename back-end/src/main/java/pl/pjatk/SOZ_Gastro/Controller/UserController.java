@@ -19,15 +19,50 @@ public class UserController
     {
         this.userService = userService;
     }
-
-    @GetMapping("/allUsers")
+    //Getters
+    @GetMapping("/getAllUsers")
     public ResponseEntity<List<User>> getAll()
     {
         return ResponseEntity.ok().body(this.userService.getAll());
     }
-    //you can't declare id while creating a new user
-    @PostMapping(value = {"", "/{id}"})
-    public ResponseEntity<User> createUser(@PathVariable(required = false) Long id, @RequestBody User data){
-        return ResponseEntity.ok().body(this.userService.createUser(id, data));
+
+    @GetMapping("/getUserById/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable("id") Long id)
+    {
+        return ResponseEntity.ok().body(this.userService.getById(id));
     }
+
+    @GetMapping("/getUserByPin/{loginPin}")
+    public ResponseEntity<User> getUserByLoginPin(@PathVariable("loginPin") String loginPin)
+    {
+        return ResponseEntity.ok().body(this.userService.getByLoginPin(loginPin));
+    }
+
+    @GetMapping("/getUserByUsername/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable("username") String username)
+    {
+        return ResponseEntity.ok().body(this.userService.getByUsername(username));
+    }
+
+    //Posts
+    @PostMapping("/createUser")
+    public ResponseEntity<User> createUser(@RequestBody User user)
+    {
+        return ResponseEntity.ok().body(this.userService.createUser(user));
+    }
+
+    //Deletes
+    @DeleteMapping("/deleteUserByUsername/{username}")
+    public ResponseEntity<String> deleteUserByUsername(@PathVariable("username") String username) {
+        this.userService.deleteUserByUsername(username);
+        return ResponseEntity.ok().body("User deleted");
+    }
+
+    @DeleteMapping("/deleteUserById/{id}")
+    public ResponseEntity<String> deleteUserById(@PathVariable("id") Long id) {
+        this.userService.deleteUserById(id);
+        return ResponseEntity.ok().body("User deleted");
+    }
+
+
 }
