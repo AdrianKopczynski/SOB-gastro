@@ -7,30 +7,29 @@ import jakarta.persistence.Id;
 public class OrderMeal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
-    private int mealId;
+    private Long mealId;
 
-    private int orderId;
+    private Long orderId;
     private String comment;
 
-    public OrderMeal( int id, int mealId, int orderId, String comment)
+    public OrderMeal(Long mealId, Long orderId, String comment)
     {
-        this.id = id;
         this.mealId = mealId;
         this.orderId = orderId;
         this.comment = comment;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public int getMealId() {
+    public Long getMealId() {
         return mealId;
     }
 
-    public int getOrderId() {
+    public Long getOrderId() {
         return orderId;
     }
 }

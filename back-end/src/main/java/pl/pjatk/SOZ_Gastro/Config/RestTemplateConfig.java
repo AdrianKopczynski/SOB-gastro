@@ -1,4 +1,4 @@
-package pl.pjatk.SOZ_Gastro.Services;
+package pl.pjatk.SOZ_Gastro.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
