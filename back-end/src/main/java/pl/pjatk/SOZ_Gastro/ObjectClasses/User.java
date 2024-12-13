@@ -14,7 +14,7 @@ public class User {
     private String username;
     private String loginPin;
     private boolean enabled = true;
-    @Column(name = "user_type", columnDefinition = "enum('Admin', 'Inventory', 'Cashier' ")
+    @Column(name = "user_type")//, columnDefinition = "enum('Admin', 'Inventory', 'Cashier' ")
     @Enumerated(EnumType.STRING)
     private UserType userType = UserType.Cashier;
 
