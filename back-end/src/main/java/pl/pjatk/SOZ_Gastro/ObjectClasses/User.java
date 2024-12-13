@@ -13,10 +13,10 @@ public class User {
 
     private String username;
     private String loginPin;
-    private boolean enabled;
+    private boolean enabled = true;
     @Column(name = "user_type", columnDefinition = "enum('Admin', 'Inventory', 'Cashier' ")
     @Enumerated(EnumType.STRING)
-    private UserType userType;
+    private UserType userType = UserType.Cashier;
 
     public User(Long id, String username, String loginPin, UserType userType, boolean enabled)
     {
@@ -26,7 +26,9 @@ public class User {
         this.userType = userType;
         this.enabled = enabled;
     }
-    public User(){}
+
+    public User() {}
+
 
     public void setId(Long id) {
         this.id = id;
