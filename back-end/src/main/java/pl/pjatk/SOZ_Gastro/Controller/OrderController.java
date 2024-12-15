@@ -23,7 +23,7 @@ public class OrderController
 
     /// Podać jakoś listę zamówionych
     @PostMapping("/createOrder")
-    public ResponseEntity<Order> createOrder(Long[] mealID, Tabletop tabletop)
+    public ResponseEntity<Order> createOrder(@RequestBody Long[] mealID, Tabletop tabletop)
     {
         Order order = orderService.addNewOrder(mealID,tabletop);
         return ResponseEntity.ok(order);
