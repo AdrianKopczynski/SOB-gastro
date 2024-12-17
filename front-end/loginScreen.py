@@ -75,7 +75,6 @@ class LoginScreen(tk.Frame):
         try:
             with open('front-end\\users.json', 'r') as f:
                 users = json.load(f)
-            pin = str(pin).strip()
             for username, stored_pin in users.items():
                 if stored_pin == pin:
                     return username
