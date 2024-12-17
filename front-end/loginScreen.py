@@ -52,7 +52,7 @@ class LoginScreen(tk.Frame):
             username = self.check_pin(self.value)
             if username:
                 self.manager.set_username(username)
-                self.manager.switch_to("tabletopEditor")
+                self.manager.switch_to("TabletopEditor")
             else:
                 self.value = ""
                 self.pin_label.config(text="Błędny PIN")
@@ -74,7 +74,6 @@ class LoginScreen(tk.Frame):
 
     def check_pin(self, pin):
         try:
-
             base_dir = os.path.dirname(os.path.abspath(__file__))
             file_path = os.path.join(base_dir, 'users.json')
             

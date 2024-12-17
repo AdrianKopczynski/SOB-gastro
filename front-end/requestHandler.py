@@ -92,19 +92,17 @@ class RequestHandler:
     #---------------------------ORDER------------------------------#
     #--------------------------------------------------------------#
 
-    def create_order(self, order):
-        self.send_post_request("order/createOrder", order)
+    def get_orders_by_table(self, table_id):
+        return self.send_get_request("order/getOrdersByTable", {"Table_id": table_id})
 
-    def get_order_by_id(self, id):
-        self.send_get_request("order/getorder", id)
+    def create_order(self, order_data):
+        return self.send_post_request("order/createOrder", order_data)
 
-    def load_orders(self):
-        self.send_get_request("order/getAllOrders")
+    def edit_order(self, order_id, updated_data):
+        return self.send_post_request("order/updateOrder", {"order_id": order_id, **updated_data})
 
-        file_path="orders.json"
-        
-        with open(file_path, "r") as file:
-            return json.load(file)
+    def delete_order(self, order_id):
+        return self.send_delete_request("order/deleteOrder", {"order_id": order_id})
 
     #--------------------------------------------------------------#
     #-------------------------MENAGEMENT---------------------------#

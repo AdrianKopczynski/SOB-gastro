@@ -1,14 +1,21 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+import json
+from orderEditor import OrderEditor
+from order import Order
 from requestHandler import RequestHandler
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+ORDERS_FILE = os.path.join(BASE_DIR, "orders.json")
 
 
-
-class Dashboard(tk.Frame):
-    def __init__(self, master, manager, table_name):
+class TabletopDashboard(tk.Frame):
+    def __init__(self, master, manager, table_name, table_id):
         super().__init__(master)
         self.manager = manager
-        self.table_name = table_name
+        self.table_id = table_id
+        self.table_name = table_name if table_name else "No Table"
         self.create_widgets()
 
     def create_widgets(self):
@@ -23,7 +30,7 @@ class Dashboard(tk.Frame):
         buttons_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
         actions = [
-            ("Back", lambda: self.manager.switch_to("tabletopEditor")),
+            ("Back", lambda: self.manager.switch_to("TabletopEditor")),
             ("New Order", self.create_order),
             ("Edit Order", self.edit_order),
             ("Delete Order", self.delete_order),
@@ -48,33 +55,83 @@ class Dashboard(tk.Frame):
 
         tk.Label(orders_frame, text="Active Orders (Tables)", font=("Arial", 18)).pack(pady=10)
 
-        self.orders_list = ttk.Treeview(orders_frame, columns=("Table", "Status", "Created At"), show="headings",
-                                        height=15)
-        self.orders_list.heading("Table", text="Table")
-        self.orders_list.heading("Status", text="Status")
+        self.orders_list = ttk.Treeview(orders_frame, columns=("Order ID", "Created At", "Comment", "Status"),
+                                        show="headings")
+        self.orders_list.heading("Order ID", text="Order ID")
         self.orders_list.heading("Created At", text="Created At")
-        self.orders_list.pack(fill="both", expand=True, padx=10, pady=10)
+        self.orders_list.heading("Comment", text="Comment")
+        self.orders_list.heading("Status", text="Status")
+        self.orders_list.pack(fill="both", expand=True)
 
-        self.load_orders()
+        self.get_orders_by_table()
 
-    def load_orders(self):
-        for item in self.orders_list.get_children():
-            self.orders_list.delete(item)
+    def get_orders_by_table(self):
+        self.orders_list.delete(*self.orders_list.get_children())
 
-        orders_data = self.request_handler.load_orders_from_file("orders.json")
+        if os.path.exists(ORDERS_FILE):
+            with open(ORDERS_FILE, "r", encoding="utf-8") as file:
+                all_orders = json.load(file)
+        else:
+            all_orders = []
 
-        for order in orders_data:
-            self.orders_list.insert("", "end", values=(order["Table"], order["Status"], order["Created At"]))
-
+        self.current_orders = [order for order in all_orders if order["table_id"] == self.table_id]
+        for order in self.current_orders:
+            self.orders_list.insert("", "end", values=(
+                order["order_id"], order["created_at"], order.get("comment", ""), order.get("status", "Open")))
 
     def create_order(self):
-        print("Creating a new order...")
+        self.manager.current_table_id = self.table_id
+        self.manager.switch_to("OrderEditor")
 
     def edit_order(self):
-        print("Editing selected order...")
+        selected_item = self.orders_list.selection()
+        if not selected_item:
+            messagebox.showwarning("Warning", "No order selected.")
+            return
+
+        order_data = self.orders_list.item(selected_item)["values"]
+        order_id = order_data[0]
+
+        with open(ORDERS_FILE, "r", encoding="utf-8") as file:
+            all_orders = json.load(file)
+
+        selected_order = next((order for order in all_orders if order["order_id"] == order_id), None)
+        if not selected_order:
+            messagebox.showerror("Error", "Order not found.")
+            return
+
+        self.manager.current_table_id = self.table_id
+        self.manager.switch_to("OrderEditor", order=selected_order)
 
     def delete_order(self):
-        print("Deleting selected order...")
+        selected_item = self.orders_list.selection()
+        if not selected_item:
+            messagebox.showwarning("Warning", "No order selected.")
+            return
+
+        order_id = self.orders_list.item(selected_item)["values"][0]
+
+        if messagebox.askyesno("Confirm", f"Are you sure you want to delete order {order_id}?"):
+            with open(ORDERS_FILE, "r", encoding="utf-8") as file:
+                all_orders = json.load(file)
+
+            updated_orders = [order for order in all_orders if order["order_id"] != order_id]
+            self.save_orders(updated_orders)
+            self.load_orders()
+
+            self.request_handler.delete_order(order_id)
+            print(f"Order {order_id} deleted.")
+
+
 
     def close_order(self):
-        print("Closing selected order...")
+        table_number = int(input("Enter table number to close: "))
+        orders_data = self.request_handler.load_orders_from_file(ORDERS_FILE)
+        for order in orders_data:
+            if order["Table"] == table_number:
+                order["Status"] = "Closed"
+        with open(ORDERS_FILE, "w", encoding="utf-8") as file:
+            json.dump(orders_data, file, indent=4)
+        
+
+
