@@ -4,6 +4,9 @@ from loginScreen import LoginScreen
 from tabletopDashboard import TabletopDashboard
 from tabletopEditor import TabletopEditor
 from orderEditor import OrderEditor
+from adminPanel import AdminPanel
+from requestHandler import RequestHandler 
+
 
 class WindowManager:
     def __init__(self, root):
@@ -11,6 +14,7 @@ class WindowManager:
         self.current_frame = None
         self.username = ""
         self.current_table_id = None
+        self.request_handler = RequestHandler(base_url="http://localhost:10000")
         self.root.bind("<Escape>", self.exit_application)
 
         self.header_frame = tk.Frame(self.root, bg="lightgray")
@@ -24,6 +28,11 @@ class WindowManager:
 
         self.greeting_label = tk.Label(self.header_frame, text="", font=("Arial", 15), fg="black", bg="lightgray")
         self.greeting_label.grid(row=0, column=1, sticky="e", padx=10)
+
+        self.admin_button = tk.Button(self.header_frame, text="Panel Admina", command=lambda: self.switch_to("AdminPanel"),
+                                      fg="white", bg="blue", font=("Arial", 15), width=15)
+        self.admin_button.grid(row=0, column=1, sticky="e", padx=10)
+        self.admin_button.grid_remove()
 
         self.logout_button = tk.Button(self.header_frame, text="Wyloguj", command=lambda: self.switch_to("LoginScreen"),
                                        fg="white", bg="red", font=("Arial", 15), width=10)
@@ -43,6 +52,18 @@ class WindowManager:
         self.username = username
         self.update_greeting()
 
+        # if username == "admin":  # TODO: zastąpić sprawdzanie na podstawie bazy danych
+        self.admin_button.grid()
+        # else:
+        # self.admin_button.grid_remove()
+
+    def update_admin_button(self, in_admin_panel):
+        if in_admin_panel:
+            self.admin_button.config(text="Powrót", command=lambda: self.switch_to("TabletopEditor"))
+        else:
+            self.admin_button.config(text="Panel Admina", command=lambda: self.switch_to("AdminPanel"))
+
+
     def update_greeting(self):
         if self.username and self.current_frame != "LoginScreen":
             self.greeting_label.config(text=f"Witaj, {self.username}!")
@@ -53,6 +74,7 @@ class WindowManager:
         self.root.destroy()
 
     def switch_to(self, frame_name, **kwargs):
+        self.update_admin_button(False)
         if self.current_frame:
             self.current_frame.destroy()
 
@@ -81,6 +103,13 @@ class WindowManager:
             self.logout_button.grid()
             self.exit_button.grid_remove()
 
+        elif frame_name == "AdminPanel":
+            self.current_frame = AdminPanel(self.root, self, self.request_handler)
+            self.logout_button.grid()
+            self.exit_button.grid_remove()
+            self.update_admin_button(True)
+
+        
         self.update_greeting()
         self.current_frame.grid(row=2, column=0, sticky="nsew")
 
