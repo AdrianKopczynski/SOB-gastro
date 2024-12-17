@@ -2,6 +2,7 @@ package pl.pjatk.SOZ_Gastro.Services;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import pl.pjatk.SOZ_Gastro.Enums.UserType;
 import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundException;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Repositories.UserRepository;
@@ -24,9 +25,9 @@ public class UserService
     public User createUser(User user) throws BadRequestException
     {
 
-        if (user == null || user.getUsername() == null || user.getLoginPin() == null || user.getUserType() == null)
+        if (user == null || user.getUsername() == null || user.getLoginPin() == null)
         {
-            throw new BadRequestException("All credentials are required.");
+            throw new BadRequestException("Username and pin are required");
         }
 
         if (userRepository.existsByUsername(user.getUsername()))
@@ -34,7 +35,12 @@ public class UserService
             throw new BadRequestException("User with username " + user.getUsername() + " already exists.");
         }
 
-        return userRepository.save(user);
+        if (userRepository.existsByLoginPin(user.getLoginPin()))
+        {
+            throw new BadRequestException("Try another PIN");
+        }
+
+         return userRepository.save(user);
     }
 
     public User getByUsername(String username) throws UserNotFoundException
@@ -91,5 +97,66 @@ public class UserService
         getByUsername(username);
 
         this.userRepository.deleteByUsername(username);
+    }
+
+    public User updateUsername(String username, String newUsername) throws UserNotFoundException
+    {
+
+
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        if (newUsername == null || newUsername.trim().isEmpty()) {
+            throw new IllegalArgumentException("New username cannot be null or empty");
+        }
+
+        User user = getByUsername(username);
+        user.setUsername(newUsername);
+
+        return userRepository.save(user);
+    }
+    public User updateLoginPin(String loginPin, String newLoginPin) throws UserNotFoundException
+    {
+        if (loginPin == null)
+        {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        if (newLoginPin == null)
+        {
+            throw new IllegalArgumentException("New login pin cannot be null");
+        }
+
+        User user = getByLoginPin(loginPin);
+        user.setLoginPin(newLoginPin);
+
+        return userRepository.save(user);
+
+    }
+
+    public User updateUserType(String username, UserType userType) throws UserNotFoundException
+    {
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+        if (userType == null) {
+            throw new IllegalArgumentException("User type cannot be null");
+        }
+
+        User user = getByUsername(username);
+        user.setUserType(userType);
+
+        return userRepository.save(user);
+    }
+
+    public User updateEnabled(String username, boolean enabled) throws UserNotFoundException
+    {
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
+        }
+
+        User user = getByUsername(username);
+        user.setEnabled(enabled);
+
+        return userRepository.save(user);
     }
 }

@@ -1,9 +1,9 @@
 package pl.pjatk.SOZ_Gastro.ObjectClasses;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name= "OrderMeal")
 public class OrderMeal {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +21,7 @@ public class OrderMeal {
         this.comment = comment;
     }
 
+    public OrderMeal(){}
     public Long getId() {
         return id;
     }

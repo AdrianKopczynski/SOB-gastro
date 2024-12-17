@@ -15,7 +15,7 @@ public class Order {
     private Instant closedAt;       //timestamp zamknięcia zamówienia
                                     //Jeśli closedAt = 0; to zamówienie jest otwarte
     private String comment;
-    @ManyToOne
+    @ManyToOne//(cascade = CascadeType.PERSIST)
     @JoinColumn(name="tabletop_id", nullable = false)
     private Tabletop tabletop;
 
@@ -29,20 +29,24 @@ public class Order {
     }
 
     public Order(Tabletop tabletop)
-    {
+    { this.tabletop = tabletop;
         createdAt = Instant.now();
-        this.tabletop = tabletop;
+
     }
 
     public Order(Long[] mealID, Tabletop tabletop)
     {
         createdAt = Instant.now();
         this.tabletop = tabletop;
+        System.out.println(mealID.length);
+        /*
         for (Long e : mealID)
         {
+            System.out.println("wejde");
             OrderMeal orderMeal = new OrderMeal(e,this.id,"");
-        }
+        }*/
     }
+
 
     public Long getId() {
         return id;
@@ -51,5 +55,6 @@ public class Order {
     public Instant getCreatedAt() {
         return createdAt;
     }
+
 
    }
