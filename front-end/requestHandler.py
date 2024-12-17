@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 class RequestHandler:
     def __init__(self, base_url):
@@ -96,6 +97,14 @@ class RequestHandler:
 
     def get_order_by_id(self, id):
         self.send_get_request("order/getorder", id)
+
+    def load_orders(self):
+        self.send_get_request("order/getAllOrders")
+
+        file_path="orders.json"
+        
+        with open(file_path, "r") as file:
+            return json.load(file)
 
     #--------------------------------------------------------------#
     #-------------------------MENAGEMENT---------------------------#
