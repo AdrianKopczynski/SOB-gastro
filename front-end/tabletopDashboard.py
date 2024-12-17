@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+from requestHandler import RequestHandler
+
 
 
 class Dashboard(tk.Frame):
@@ -56,13 +58,14 @@ class Dashboard(tk.Frame):
         self.load_orders()
 
     def load_orders(self):
-        orders_data = [
-            (1, "Open", "2024-12-01 12:00"),
-            (2, "Open", "2024-12-01 12:30"),
-            (3, "Closed", "2024-12-01 13:00"),
-        ]
+        for item in self.orders_list.get_children():
+            self.orders_list.delete(item)
+
+        orders_data = self.request_handler.load_orders_from_file("orders.json")
+
         for order in orders_data:
-            self.orders_list.insert("", "end", values=order)
+            self.orders_list.insert("", "end", values=(order["Table"], order["Status"], order["Created At"]))
+
 
     def create_order(self):
         print("Creating a new order...")
