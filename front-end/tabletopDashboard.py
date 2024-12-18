@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import json
 from orderEditor import OrderEditor
-from order import Order
 from requestHandler import RequestHandler
 import os
 
@@ -81,7 +80,7 @@ class TabletopDashboard(tk.Frame):
 
     def create_order(self):
         self.manager.current_table_id = self.table_id
-        self.manager.switch_to("OrderEditor")
+        self.manager.switch_to("OrderEditor", table_name=self.table_name)
 
     def edit_order(self):
         selected_item = self.orders_list.selection()
@@ -101,7 +100,7 @@ class TabletopDashboard(tk.Frame):
             return
 
         self.manager.current_table_id = self.table_id
-        self.manager.switch_to("OrderEditor", order=selected_order)
+        self.manager.switch_to("OrderEditor", order=selected_order, table_name=self.table_name)
 
     def delete_order(self):
         selected_item = self.orders_list.selection()
@@ -125,13 +124,4 @@ class TabletopDashboard(tk.Frame):
 
 
     def close_order(self):
-        table_number = int(input("Enter table number to close: "))
-        orders_data = self.request_handler.load_orders_from_file(ORDERS_FILE)
-        for order in orders_data:
-            if order["Table"] == table_number:
-                order["Status"] = "Closed"
-        with open(ORDERS_FILE, "w", encoding="utf-8") as file:
-            json.dump(orders_data, file, indent=4)
-        
-
-
+        pass

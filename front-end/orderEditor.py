@@ -4,12 +4,14 @@ import json
 import os
 from datetime import datetime
 
+
 class OrderEditor(tk.Frame):
-    def __init__(self, master, manager, order=None):
+    def __init__(self, master, manager, order=None, table_name=None):
         super().__init__(master)
         self.manager = manager
-        self.order = order 
-        self.selected_meals = []  
+        self.order = order
+        self.table_name = table_name
+        self.selected_meals = []
 
         self.meals = self.load_meals()
         self.create_widgets()
@@ -65,10 +67,14 @@ class OrderEditor(tk.Frame):
         tk.Button(buttons_frame, text="Zapisz Zamówienie", font=("Arial", 14), bg="green", fg="white",
                   command=self.save_order).pack(side="left", padx=10)
 
-        tk.Button(buttons_frame, text="Anuluj", font=("Arial", 14), bg="red", fg="white",
-                  command=lambda: self.manager.switch_to("TabletopDashboard", table_id=self.manager.current_table_id)).pack(side="right", padx=10)
+        (tk.Button(buttons_frame, text="Anuluj", font=("Arial", 14), bg="red", fg="white",
+                   command=lambda: self.manager.switch_to("TabletopDashboard",
+                                                          table_name=self.table_name,
+                                                          table_id=self.manager.current_table_id)).pack(side="right",
+                                                                                                        padx=10))
 
     def update_meal_list(self, *args):
+        search_term = self.search_var.get().lower()
         search_term = self.search_var.get().lower()
         self.meal_listbox.delete(0, tk.END)
         for meal in self.meals:
@@ -136,4 +142,7 @@ class OrderEditor(tk.Frame):
         with open(ORDERS_FILE, "w", encoding="utf-8") as file:
             json.dump(orders, file, indent=4, ensure_ascii=False)
 
-        self.manager.switch_to("TabletopDashboard", table_id=self.manager.current_table_id)
+        self.manager.switch_to("TabletopDashboard",
+                               table_id=self.manager.current_table_id,
+                               table_name=self.table_name
+                               )

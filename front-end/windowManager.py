@@ -10,6 +10,7 @@ class WindowManager:
         self.root = root
         self.current_frame = None
         self.username = ""
+        self.current_table_id = None
         self.root.bind("<Escape>", self.exit_application)
 
         self.header_frame = tk.Frame(self.root, bg="lightgray")
@@ -62,8 +63,8 @@ class WindowManager:
             self.username = ""
 
         elif frame_name == "TabletopDashboard":
-            table_name = kwargs.get("table_name", "No Table")
-            table_id = kwargs.get("table_id", None)
+            table_name = kwargs.get("table_name",)
+            table_id = kwargs.get("table_id", self.current_table_id)
             self.current_frame = TabletopDashboard(self.root, self, table_name=table_name, table_id=table_id)
             self.logout_button.grid()
             self.exit_button.grid_remove()
@@ -75,7 +76,8 @@ class WindowManager:
 
         elif frame_name == "OrderEditor":
             order = kwargs.get("order", None)
-            self.current_frame = OrderEditor(self.root, self, order=order)
+            table_name = kwargs.get("table_name")
+            self.current_frame = OrderEditor(self.root, self, order=order, table_name=table_name)
             self.logout_button.grid()
             self.exit_button.grid_remove()
 
