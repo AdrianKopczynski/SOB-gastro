@@ -41,7 +41,7 @@ class AdminPanel(tk.Frame):
         self.create_main_tab()
         self.create_user_tab()
 
-        self.switch_tab("main")
+        self.switch_tab("user")
 
     def switch_tab(self, tab_name):
         for tab in self.tabs.values():
@@ -60,11 +60,9 @@ class AdminPanel(tk.Frame):
     def create_user_tab_view(self, frame):
         frame.grid_columnconfigure(0, weight=1)
         frame.grid_columnconfigure(1, weight=3)
-        frame.grid_columnconfigure(2, weight=0, minsize=300)
+        frame.grid_columnconfigure(2, weight=1, minsize=300)
+        frame.grid_rowconfigure(0, weight=0)
         frame.grid_rowconfigure(1, weight=1)
-
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_rowconfigure(1, weight=10)
         
         buttons_frame = tk.Frame(frame)
         buttons_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
@@ -83,59 +81,83 @@ class AdminPanel(tk.Frame):
 
         tk.Label(users_frame, text="Lista użytkowników", font=("Arial", 18)).pack(pady=10)
 
-        self.users_listbox = ttk.Treeview(users_frame, columns=("Username",), show="headings")
-        self.users_listbox.heading("Username", text="Nazwa użytkownika")
+        style = ttk.Style()
+        style.configure("Treeview", font=("Arial", 14), rowheight=40) 
+        style.configure("Treeview.Heading", font=("Arial", 16, "bold"))
+
+        self.users_listbox = ttk.Treeview(users_frame, columns=("ID", "Nazwa", "Typ", "Aktywny"), show="headings")
+        self.users_listbox.heading("ID", text="ID")
+        self.users_listbox.heading("Nazwa", text="Nazwa")
+        self.users_listbox.heading("Typ", text="Typ")
+        self.users_listbox.heading("Aktywny", text="Aktywny")
+
+        self.users_listbox.column("ID", anchor="center", width=10)
+        self.users_listbox.column("Nazwa", anchor="w", width=160)
+        self.users_listbox.column("Typ", anchor="center", width=100)
+        self.users_listbox.column("Aktywny", anchor="center", width=70)
         self.users_listbox.pack(fill="both", expand=True)
-        self.users_listbox.column("Username", anchor="center")
+
 
         self.load_users()
 
         self.dynamic_frame = tk.Frame(frame, bg="white", relief="sunken", bd=2, width=300)
         self.dynamic_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
-        self.dynamic_frame.grid_propagate(False)
 
         buttons_frame.grid_propagate(False)
         users_frame.grid_propagate(False)  
         
     def load_users(self):
-        users = self.request_handler.get_all_users()
-        if users:
-            self.users_listbox.delete(*self.users_listbox.get_children())
-            for user in users:
-                self.users_listbox.insert("", "end", values=(user['username'],))
+        test_users = [
+            {"user_id": 1, "user_name": "kasjer1", "user_type": "Kasjer", "enabled": True},
+            {"user_id": 2, "user_name": "magazynier1", "user_type": "Magazynier", "enabled": True},
+        ]
+
+        self.users_listbox.delete(*self.users_listbox.get_children())
+        for user in test_users:
+            self.users_listbox.insert(
+                "", "end", values=(user['user_id'], user['user_name'], user['user_type'], "Tak" if user['enabled'] else "Nie")
+            )
 
     def show_add_user_form(self, parent_frame):
         for widget in self.dynamic_frame.winfo_children():
-            widget.destroy() 
+            widget.destroy()
 
         tk.Label(self.dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
 
         tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
         username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
         username_entry.pack(pady=5)
+    
+        tk.Label(self.dynamic_frame, text="PIN (4 cyfry):", font=("Arial", 14)).pack(pady=5)
+        pin_entry = tk.Entry(self.dynamic_frame, show="*", font=("Arial", 14))
+        pin_entry.pack(pady=5)
 
-        tk.Label(self.dynamic_frame, text="Hasło:", font=("Arial", 14)).pack(pady=5)
-        password_entry = tk.Entry(self.dynamic_frame, show="*", font=("Arial", 14))
-        password_entry.pack(pady=5)
-
-        tk.Label(self.dynamic_frame, text="Potwierdź hasło:", font=("Arial", 14)).pack(pady=5)
-        confirm_password_entry = tk.Entry(self.dynamic_frame, show="*", font=("Arial", 14))
-        confirm_password_entry.pack(pady=5)
+        tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
+        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Kasjer", "Magazynier"], font=("Arial", 14))
+        user_type_combo.pack(pady=5)
 
         def submit():
-            username = username_entry.get().strip()
-            password = password_entry.get()
-            confirm_password = confirm_password_entry.get()
+            user_name = username_entry.get().strip()
+            login_pin = pin_entry.get().strip()
+            user_type = user_type_combo.get()
 
-            if not username or not password:
+            if not user_name or not login_pin or not user_type:
                 tk.Label(self.dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
-            if password != confirm_password:
-                tk.Label(self.dynamic_frame, text="Hasła nie pasują!", fg="red", font=("Arial", 12)).pack(pady=5)
+            if len(login_pin) != 4 or not login_pin.isdigit():
+                tk.Label(self.dynamic_frame, text="PIN musi składać się z 4 cyfr!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
-            success = self.request_handler.create_user({"username": username, "password": password})
+            if self.request_handler.check_user_exists(user_name):
+                tk.Label(self.dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
+                return
+
+            success = self.request_handler.create_user({
+                "user_name": user_name,
+                "login_pin": login_pin,
+                "user_type": user_type,
+            })
             if success:
                 self.load_users()
                 tk.Label(self.dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
@@ -147,11 +169,45 @@ class AdminPanel(tk.Frame):
     def delete_user(self):
         selected_item = self.users_listbox.selection()
         if selected_item:
-            user_to_delete = self.users_listbox.item(selected_item, "values")[0]
-            if messagebox.askyesno("Potwierdzenie", f"Czy na pewno chcesz usunąć użytkownika {user_to_delete}?"):
-                success = self.request_handler.delete_user_by_username(user_to_delete)
+            user_id = self.users_listbox.item(selected_item, "values")[0]
+
+            for widget in self.dynamic_frame.winfo_children():
+                widget.destroy()
+
+            tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć użytkownika o ID {user_id}?",
+                    font=("Arial", 14)).pack(pady=10)
+
+            def confirm_delete():
+                success = self.request_handler.delete_user_by_id(user_id)
+                for widget in self.dynamic_frame.winfo_children():
+                    widget.destroy()
                 if success:
                     self.load_users()
-                    messagebox.showinfo("Sukces", f"Usunięto użytkownika {user_to_delete}.")
+                    tk.Label(self.dynamic_frame, text=f"Użytkownik o ID {user_id} został usunięty.",
+                            fg="green", font=("Arial", 12)).pack(pady=5)
                 else:
-                    messagebox.showerror("Błąd", "Nie udało się usunąć użytkownika.")
+                    tk.Label(self.dynamic_frame, text=f"Nie udało się usunąć użytkownika o ID {user_id}.",
+                            fg="red", font=("Arial", 12)).pack(pady=5)
+
+            tk.Button(self.dynamic_frame, text="Tak", font=("Arial", 14), bg="green", fg="white",
+                    command=confirm_delete).pack(padx=10, pady=10)
+            tk.Button(self.dynamic_frame, text="Nie", font=("Arial", 14), bg="red", fg="white",
+                    command=lambda: self.clear_dynamic_frame()).pack(padx=10, pady=10)
+
+        else:
+            for widget in self.dynamic_frame.winfo_children():
+                widget.destroy()
+            tk.Label(self.dynamic_frame, text="Proszę wybrać użytkownika do usunięcia.",
+                    fg="red", font=("Arial", 12)).pack(pady=5)
+
+            
+    def clear_dynamic_frame(self):
+        for widget in self.dynamic_frame.winfo_children():
+            widget.destroy()
+
+    def check_user_exists(self, user_name):
+        users = self.get_all_users() # Trzeba dodac pozniej jak funkcje z requestHandlera!!!
+        for user in users:
+            if user["user_name"] == user_name:
+                return True
+        return False
