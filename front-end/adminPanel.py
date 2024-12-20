@@ -55,38 +55,28 @@ class AdminPanel(tk.Frame):
         tk.Label(self.main_tab, text="Witaj w panelu administracyjnym!", font=("Arial", 14)).pack(pady=10)
 
     def create_user_tab(self):
-        self.user_tab.grid_rowconfigure(0, weight=1)
-        self.user_tab.grid_columnconfigure(0, weight=1)
         self.create_user_tab_view(self.user_tab)
 
     def create_user_tab_view(self, frame):
+        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_columnconfigure(1, weight=3)
+        frame.grid_columnconfigure(2, weight=0, minsize=300)
+        frame.grid_rowconfigure(1, weight=1)
+
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_rowconfigure(1, weight=10)
-        frame.grid_columnconfigure(0, weight=1)
-        frame.grid_columnconfigure(1, weight=4)
-
-        tk.Label(frame, text="Zarządzanie użytkownikami", font=("Arial", 24)).grid(row=0, column=0, columnspan=2, pady=20)
-
+        
         buttons_frame = tk.Frame(frame)
         buttons_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
         actions = [
-            ("Dodaj użytkownika", self.add_user),
+            ("Dodaj użytkownika", lambda: self.show_add_user_form(frame)),
             ("Usuń użytkownika", self.delete_user),
         ]
 
-        buttons_frame.grid_rowconfigure(0, weight=1)
-        buttons_frame.grid_rowconfigure(len(actions) + 1, weight=1)
-        buttons_frame.grid_columnconfigure(0, weight=1)
-        buttons_frame.grid_columnconfigure(2, weight=1)
-
         for idx, (label, command) in enumerate(actions):
             tk.Button(buttons_frame, text=label, font=("Arial", 16), bg="gray", fg="white",
-                      width=15, height=2, command=command).grid(row=idx + 1, column=1, pady=10)
-
-        style = ttk.Style()
-        style.configure("Treeview", font=("Arial", 14), rowheight=40)
-        style.configure("Treeview.Heading", font=("Arial", 16, "bold"))
+                    width=15, height=2, command=command).pack(pady=10)
 
         users_frame = tk.Frame(frame)
         users_frame.grid(row=1, column=1, sticky="nsew", padx=10, pady=10)
@@ -96,9 +86,17 @@ class AdminPanel(tk.Frame):
         self.users_listbox = ttk.Treeview(users_frame, columns=("Username",), show="headings")
         self.users_listbox.heading("Username", text="Nazwa użytkownika")
         self.users_listbox.pack(fill="both", expand=True)
+        self.users_listbox.column("Username", anchor="center")
 
         self.load_users()
 
+        self.dynamic_frame = tk.Frame(frame, bg="white", relief="sunken", bd=2, width=300)
+        self.dynamic_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
+        self.dynamic_frame.grid_propagate(False)
+
+        buttons_frame.grid_propagate(False)
+        users_frame.grid_propagate(False)  
+        
     def load_users(self):
         users = self.request_handler.get_all_users()
         if users:
@@ -106,21 +104,23 @@ class AdminPanel(tk.Frame):
             for user in users:
                 self.users_listbox.insert("", "end", values=(user['username'],))
 
-    def add_user(self):
-        form = tk.Toplevel(self)
-        form.title("Dodaj użytkownika")
+    def show_add_user_form(self, parent_frame):
+        for widget in self.dynamic_frame.winfo_children():
+            widget.destroy() 
 
-        tk.Label(form, text="Nazwa użytkownika:", font=("Arial", 14)).grid(row=0, column=0, padx=10, pady=10)
-        username_entry = tk.Entry(form, font=("Arial", 14))
-        username_entry.grid(row=0, column=1, padx=10, pady=10)
+        tk.Label(self.dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
 
-        tk.Label(form, text="Hasło:", font=("Arial", 14)).grid(row=1, column=0, padx=10, pady=10)
-        password_entry = tk.Entry(form, show="*", font=("Arial", 14))
-        password_entry.grid(row=1, column=1, padx=10, pady=10)
+        tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
+        username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        username_entry.pack(pady=5)
 
-        tk.Label(form, text="Potwierdź hasło:", font=("Arial", 14)).grid(row=2, column=0, padx=10, pady=10)
-        confirm_password_entry = tk.Entry(form, show="*", font=("Arial", 14))
-        confirm_password_entry.grid(row=2, column=1, padx=10, pady=10)
+        tk.Label(self.dynamic_frame, text="Hasło:", font=("Arial", 14)).pack(pady=5)
+        password_entry = tk.Entry(self.dynamic_frame, show="*", font=("Arial", 14))
+        password_entry.pack(pady=5)
+
+        tk.Label(self.dynamic_frame, text="Potwierdź hasło:", font=("Arial", 14)).pack(pady=5)
+        confirm_password_entry = tk.Entry(self.dynamic_frame, show="*", font=("Arial", 14))
+        confirm_password_entry.pack(pady=5)
 
         def submit():
             username = username_entry.get().strip()
@@ -128,22 +128,21 @@ class AdminPanel(tk.Frame):
             confirm_password = confirm_password_entry.get()
 
             if not username or not password:
-                messagebox.showerror("Błąd", "Wszystkie pola są wymagane.", parent=form)
+                tk.Label(self.dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             if password != confirm_password:
-                messagebox.showerror("Błąd", "Hasła nie pasują.", parent=form)
+                tk.Label(self.dynamic_frame, text="Hasła nie pasują!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             success = self.request_handler.create_user({"username": username, "password": password})
             if success:
                 self.load_users()
-                messagebox.showinfo("Sukces", "Dodano nowego użytkownika.", parent=form)
-                form.destroy()
+                tk.Label(self.dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
             else:
-                messagebox.showerror("Błąd", "Nie udało się dodać użytkownika.", parent=form)
+                tk.Label(self.dynamic_frame, text="Nie udało się dodać użytkownika.", fg="red", font=("Arial", 12)).pack(pady=5)
 
-        tk.Button(form, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).grid(row=3, column=0, columnspan=2, pady=10)
+        tk.Button(self.dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
 
     def delete_user(self):
         selected_item = self.users_listbox.selection()
