@@ -39,42 +39,25 @@
         "table_id": 2,
         "status": "Open",
         "created_at": "2024-06-17 10:30",
-        "comment": "Pierwsze zamówienie stolik 2",
+        "comment": "Nowy komentarz: Klient jest wybredny",
         "meals": [
             {
-                "meal_id": 4,
-                "name": "Sałatka Cezar",
-                "category": "Sałatki",
-                "price": 20.0,
-                "description": "Sałatka z kurczakiem, grzankami, parmezanem i sosem Cezar."
+                "meal_id": 2,
+                "name": "Spaghetti Carbonara",
+                "price": 28.0,
+                "quantity": 4
+            },
+            {
+                "meal_id": 6,
+                "name": "Kawa Latte",
+                "price": 10.0,
+                "quantity": 1
             },
             {
                 "meal_id": 4,
                 "name": "Sałatka Cezar",
-                "category": "Sałatki",
                 "price": 20.0,
-                "description": "Sałatka z kurczakiem, grzankami, parmezanem i sosem Cezar."
-            },
-            {
-                "meal_id": 4,
-                "name": "Sałatka Cezar",
-                "category": "Sałatki",
-                "price": 20.0,
-                "description": "Sałatka z kurczakiem, grzankami, parmezanem i sosem Cezar."
-            },
-            {
-                "meal_id": 4,
-                "name": "Sałatka Cezar",
-                "category": "Sałatki",
-                "price": 20.0,
-                "description": "Sałatka z kurczakiem, grzankami, parmezanem i sosem Cezar."
-            },
-            {
-                "meal_id": 4,
-                "name": "Sałatka Cezar",
-                "category": "Sałatki",
-                "price": 20.0,
-                "description": "Sałatka z kurczakiem, grzankami, parmezanem i sosem Cezar."
+                "quantity": 4
             }
         ]
     },
@@ -83,13 +66,13 @@
         "table_id": 2,
         "status": "Closed",
         "created_at": "2024-06-17 11:30",
-        "comment": "Drugie zamówienie stolik 2",
+        "comment": "komentarz",
         "meals": [
             {
                 "meal_id": 5,
                 "name": "Zupa Pomidorowa",
-                "category": "Zupy",
-                "price": 12.0
+                "price": 12.0,
+                "quantity": 1
             }
         ]
     },
@@ -103,23 +86,20 @@
             {
                 "meal_id": 2,
                 "name": "Spaghetti Carbonara",
-                "category": "Pasta",
                 "price": 28.0,
-                "description": "Makaron spaghetti z sosem jajecznym, boczkiem i serem pecorino."
+                "quantity": 1
             },
             {
                 "meal_id": 2,
                 "name": "Spaghetti Carbonara",
-                "category": "Pasta",
                 "price": 28.0,
-                "description": "Makaron spaghetti z sosem jajecznym, boczkiem i serem pecorino."
+                "quantity": 1
             },
             {
                 "meal_id": 2,
                 "name": "Spaghetti Carbonara",
-                "category": "Pasta",
                 "price": 28.0,
-                "description": "Makaron spaghetti z sosem jajecznym, boczkiem i serem pecorino."
+                "quantity": 1
             }
         ]
     },
@@ -167,25 +147,31 @@
         "table_id": 2,
         "status": "Open",
         "created_at": "2024-06-17 14:30",
-        "comment": "Piąte zamówienie stolik 2",
+        "comment": "Super komentaz",
         "meals": [
             {
-                "meal_id": 7,
-                "name": "Deser Tiramisu",
-                "category": "Desery",
-                "price": 15.0
+                "meal_id": 2,
+                "name": "Spaghetti Carbonara",
+                "price": 28.0,
+                "quantity": 2
             },
             {
                 "meal_id": 5,
                 "name": "Zupa Pomidorowa",
-                "category": "Zupy",
-                "price": 12.0
+                "price": 12.0,
+                "quantity": 2
+            },
+            {
+                "meal_id": 7,
+                "name": "Deser Tiramisu",
+                "price": 15.0,
+                "quantity": 1
             },
             {
                 "meal_id": 3,
                 "name": "Burger Wołowy",
-                "category": "Burgery",
-                "price": 30.0
+                "price": 30.0,
+                "quantity": 1
             }
         ]
     },
@@ -223,5 +209,47 @@
         "status": "Open",
         "created_at": "2024-06-17 14:45",
         "comment": "Piąte zamówienie stolik 3"
+    },
+    {
+        "order_id": 16,
+        "table_id": 2,
+        "status": "Open",
+        "created_at": "2024-12-20 14:37:46",
+        "comment": "Komentarz na nowe zamowienie",
+        "meals": [
+            {
+                "meal_id": 6,
+                "name": "Kawa Latte",
+                "price": 10.0,
+                "quantity": 1
+            },
+            {
+                "meal_id": 5,
+                "name": "Zupa Pomidorowa",
+                "price": 12.0,
+                "quantity": 1
+            },
+            {
+                "meal_id": 4,
+                "name": "Sałatka Cezar",
+                "price": 20.0,
+                "quantity": 7
+            }
+        ]
+    },
+    {
+        "order_id": 17,
+        "table_id": 4,
+        "status": "Open",
+        "created_at": "2024-12-20 14:46:48",
+        "comment": "nowy 123 321",
+        "meals": [
+            {
+                "meal_id": 2,
+                "name": "Spaghetti Carbonara",
+                "price": 28.0,
+                "quantity": 5
+            }
+        ]
     }
 ]
