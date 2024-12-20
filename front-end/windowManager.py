@@ -74,15 +74,17 @@ class WindowManager:
         self.root.destroy()
 
     def switch_to(self, frame_name, **kwargs):
-        self.update_admin_button(False)
         if self.current_frame:
             self.current_frame.destroy()
+            self.update_admin_button(False)
+
 
         if frame_name == "LoginScreen":
             self.current_frame = LoginScreen(self.root, self)
             self.logout_button.grid_remove()
             self.exit_button.grid()
             self.username = ""
+            self.admin_button.grid_remove()
 
         elif frame_name == "TabletopDashboard":
             table_name = kwargs.get("table_name",)

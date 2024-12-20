@@ -18,12 +18,10 @@ class AdminPanel(tk.Frame):
         self.navbar_frame.grid(row=0, column=0, sticky="ew")
         self.navbar_frame.grid_columnconfigure(0, weight=1)  # Rozciągnięcie na całą szerokość
 
-        # Ustawienie stylu dla przycisków tabów
         style = ttk.Style()
         style.configure("TButton", background="lightgray", foreground="black", font=("Arial", 15), padding=5)
         style.map("TButton", background=[("active", "darkgray")])
 
-        # Przyciski
         self.main_tab_button = ttk.Button(self.navbar_frame, text="Główna", command=lambda: self.switch_tab("main"))
         self.main_tab_button.grid(row=0, column=0, sticky="w", padx=5)
 
