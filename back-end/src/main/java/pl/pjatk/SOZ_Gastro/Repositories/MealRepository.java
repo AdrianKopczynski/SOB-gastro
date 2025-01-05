@@ -8,4 +8,5 @@ import java.util.List;
 public interface MealRepository extends JpaRepository<Meal, Long> {
 
     List<Meal> findAllByIdIsNotNull();
+    List<Meal> findAllByCategoryName(String category);
 }

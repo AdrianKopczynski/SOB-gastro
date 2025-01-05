@@ -11,6 +11,7 @@ import pl.pjatk.SOZ_Gastro.Repositories.MealRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.TabletopRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 //put table, put meal, put category
 
@@ -27,7 +28,6 @@ public class ManagementService {
         this.mealRepository = mealRepository;
         this.tabletopRepository = tabletopRepository;
     }
-    public String helloWorld(){return "Hello";}
 
     public Category addCategory (Category category){
         if (categoryRepository.existsByName(category.getName())) {
@@ -37,6 +37,14 @@ public class ManagementService {
         return categoryRepository.save(category);
     }
 
+    public Category updateCategory (Category category, long id){
+        Category tmp = categoryRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("no category with id " + id));
+        tmp.setName(category.getName());
+        return categoryRepository.save(tmp);
+    }
+
+
     public List<Category> getCategoryList(){
         return categoryRepository.findAllByIdIsNotNull();
     }
@@ -44,12 +52,52 @@ public class ManagementService {
         return  mealRepository.save((meal));
     }
 
+    public Meal updateMeal (Meal meal, long id){
+        Meal tmp = mealRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("no meal with id " + id));
+        tmp.setName(meal.getName());
+        tmp.setCategory(meal.getCategory());
+        tmp.setPrice(meal.getPrice());
+        return mealRepository.save(tmp);
+    }
+
+    public boolean deleteMeal(long id){
+        if (!mealRepository.existsById(id)) throw new NoSuchElementException("no meal with id " + id);
+        mealRepository.deleteById(id);
+        return true;
+    }
+
     public List<Meal> getMealList(){
         return mealRepository.findAllByIdIsNotNull();
     }
 
+    public List<Meal> getMealListByCategoryName(String categoryName){
+        if (!categoryRepository.existsByName(categoryName)) throw new NoSuchElementException("no category with name " + categoryName);
+        return mealRepository.findAllByCategoryName(categoryName);
+    }
+
+
     public Tabletop addTabletop(Tabletop tabletop){
         return tabletopRepository.save(tabletop);
     }
+
+    public Tabletop updateTabletop (Tabletop tabletop, long id){
+        Tabletop tmp = tabletopRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("no tableTop with " + id));
+        tmp.setName(tabletop.getName());
+        tmp.setAvailable(tabletop.isAvailable());
+        return tabletopRepository.save(tmp);
+    }
+
+    public Tabletop toggleAvailableTabletopById (long id){
+        Tabletop tmp = tabletopRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("no tableTop with " + id));
+        tmp.setAvailable(!tmp.isAvailable());
+        return tabletopRepository.save(tmp);
+    }
+
+    public List<Tabletop> getTabletopList(){return tabletopRepository.findAllByIdIsNotNull();}
+
+    public List<Tabletop> getAvailableTabletopList(){return tabletopRepository.findAllByIdIsNotNullAndIsAvailableTrue();}
 
 }
