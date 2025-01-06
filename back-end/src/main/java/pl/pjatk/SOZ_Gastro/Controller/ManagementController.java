@@ -7,7 +7,9 @@ import pl.pjatk.SOZ_Gastro.ObjectClasses.Meal;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 import pl.pjatk.SOZ_Gastro.Services.ManagementService;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/management")
@@ -39,6 +41,11 @@ public class ManagementController {
     @PutMapping("/updateMeal/{id}")
     public ResponseEntity<Meal> updateMeal(@RequestBody Meal meal, @PathVariable long id){
         return ResponseEntity.ok(managementService.updateMeal(meal,id));
+    }
+
+    @PutMapping("/updateManyMealPrices")
+    public ResponseEntity<String> updateManyMealPrices(@RequestBody Map<Long, BigDecimal> priceUpdates){
+        return ResponseEntity.ok(managementService.updateManyMealPrice(priceUpdates));
     }
 
     @DeleteMapping("/deleteMeal/{id}")

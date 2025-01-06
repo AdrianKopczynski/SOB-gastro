@@ -1,6 +1,8 @@
 package pl.pjatk.SOZ_Gastro.ObjectClasses;
 
 import jakarta.persistence.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 
@@ -18,6 +20,7 @@ public class Meal {
 
 
     public Meal(Long id, String name, BigDecimal price, Category category) {
+        validateNameOrThrowError(name);
         this.id = id;
         this.name = name;
         this.price = price;
@@ -41,7 +44,14 @@ public class Meal {
     }
 
     public void setName(String name) {
+        validateNameOrThrowError(name);
         this.name = name;
+    }
+
+    public void validateNameOrThrowError(String name){
+        if (InputStringMysqlValidator.containsForbiddenCharacters(name)) {
+            throw new IllegalArgumentException("name contains forbidden characters " + name);
+        }
     }
 
     public BigDecimal getPrice() {

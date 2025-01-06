@@ -10,7 +10,9 @@ import pl.pjatk.SOZ_Gastro.Repositories.CategoryRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.MealRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.TabletopRepository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 //put table, put meal, put category
@@ -59,6 +61,20 @@ public class ManagementService {
         tmp.setCategory(meal.getCategory());
         tmp.setPrice(meal.getPrice());
         return mealRepository.save(tmp);
+    }
+
+    public Meal updateMealPrice (long id, BigDecimal price){
+        Meal tmp = mealRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("no meal with id " + id));
+        tmp.setPrice(price);
+        return mealRepository.save(tmp);
+    }
+
+    public String updateManyMealPrice (Map<Long, BigDecimal> priceUpdates){
+        priceUpdates.forEach((id,price) -> {
+            updateMealPrice(id, price);
+        });
+        return "success";
     }
 
     public boolean deleteMeal(long id){
