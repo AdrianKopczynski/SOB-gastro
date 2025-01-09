@@ -26,19 +26,23 @@ class OrderEditor(tk.Frame):
         MEALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "meals.json")
         if os.path.exists(MEALS_FILE):
             with open(MEALS_FILE, "r", encoding="utf-8") as file:
-                return json.load(file)
+                meals = json.load(file)
+                self.categories = list(set(meal["category"] for meal in meals))  # Pobierz unikalne kategorie
+                return meals
         else:
             messagebox.showerror("Błąd", "Plik meals.json nie istnieje!")
             return []
 
     def create_widgets(self):
-        self.grid_rowconfigure(0, weight=0)
-        self.grid_rowconfigure(1, weight=10)
+        self.grid_rowconfigure(0, weight=0)  
+        self.grid_rowconfigure(1, weight=0)  
+        self.grid_rowconfigure(2, weight=0)  
+        self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(1, weight=2)
 
         title_text = f"Edycja Zamówienia" if self.order else "Nowe Zamówienie"
-        tk.Label(self, text=title_text, font=("Arial", 24)).grid(row=0, column=0, columnspan=2, pady=20)
+        tk.Label(self, text=title_text, font=("Arial", 24)).grid(row=0, column=0, columnspan=2, pady=10)
 
         comment_frame = tk.Frame(self)
         comment_frame.grid(row=1, column=0, columnspan=2, sticky="ew", padx=10, pady=10)
@@ -58,26 +62,49 @@ class OrderEditor(tk.Frame):
                 self.comment_text.delete("1.0", f"1.{max_chars}")
         self.comment_text.bind("<KeyRelease>", limit_comment)
 
+        category_frame = tk.Frame(self)
+        category_frame.grid(row=2, column=0, sticky="ew", padx=10, pady=5)
+
+        canvas = tk.Canvas(category_frame, height=34)
+        scrollbar = tk.Scrollbar(category_frame, orient="horizontal", command=canvas.xview)
+        scrollable_frame = tk.Frame(canvas)
+
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        canvas.update_idletasks()
+        canvas.configure(height=canvas.winfo_reqheight())
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="w")
+        canvas.configure(xscrollcommand=scrollbar.set)
+        canvas.pack(side="top", fill="x", expand=False)
+        scrollbar.pack(fill="x")
+
+        all_button = tk.Button(scrollable_frame, text="All", font=("Arial", 14), command=self.show_all_meals)
+        all_button.pack(side="left", padx=5)
+
+        for category in self.categories:
+            button = tk.Button(scrollable_frame, text=category, font=("Arial", 14), height=1,
+                   command=lambda c=category: self.filter_meals_by_category(c))
+            button.pack(side="left", padx=5)
+
         left_frame = tk.Frame(self)
-        left_frame.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
+        left_frame.grid(row=3, column=0, sticky="nsew", padx=10, pady=10)
 
-        tk.Label(left_frame, text="Dostępne posiłki:", font=("Arial", 14)).pack(pady=5)
-
-        self.meal_table = ttk.Treeview(left_frame, columns=("ID", "Nazwa", "Cena"), show="headings")
-        self.meal_table.heading("ID", text="ID")
+        tk.Label(left_frame, text="Dostępne posiłki:", font=("Arial", 14)).pack(anchor="w", padx=5)
+        self.meal_table = ttk.Treeview(left_frame, columns=("Nazwa", "Cena"), show="headings")
         self.meal_table.heading("Nazwa", text="Nazwa")
         self.meal_table.heading("Cena", text="Cena")
-        self.meal_table.column("ID", width=50, anchor="center")
         self.meal_table.column("Nazwa", width=200, anchor="w")
         self.meal_table.column("Cena", width=100, anchor="center")
         self.meal_table.pack(fill="both", expand=True, padx=5, pady=5)
         self.update_meal_table()
 
         right_frame = tk.Frame(self)
-        right_frame.grid(row=2, column=1, sticky="nsew", padx=10, pady=10)
+        right_frame.grid(row=2, rowspan=2, column=1, sticky="nsew", padx=10, pady=10)
 
-        tk.Label(right_frame, text="Posiłki w zamówieniu:", font=("Arial", 14)).pack(pady=5)
-
+        tk.Label(right_frame, text="Posiłki w zamówieniu:", font=("Arial", 14)).pack(anchor="w", padx=5)
         self.order_table = ttk.Treeview(right_frame, columns=("Nazwa", "Cena", "Ilość"), show="headings")
         self.order_table.heading("Nazwa", text="Nazwa")
         self.order_table.heading("Cena", text="Cena")
@@ -90,7 +117,7 @@ class OrderEditor(tk.Frame):
         self.update_order_table()
 
         buttons_frame = tk.Frame(self)
-        buttons_frame.grid(row=3, column=0, columnspan=2, pady=10)
+        buttons_frame.grid(row=4, column=0, columnspan=2, pady=10)
 
         tk.Button(buttons_frame, text="Zapisz Zamówienie", font=("Arial", 14), bg="green", fg="white",
                 command=self.save_order).pack(side="left", padx=10)
@@ -112,7 +139,7 @@ class OrderEditor(tk.Frame):
     def update_meal_table(self):
         self.meal_table.delete(*self.meal_table.get_children())
         for meal in self.meals:
-            row_id = self.meal_table.insert("", "end", values=(meal["meal_id"], meal["name"], f"{meal['price']} PLN", "+"))
+            row_id = self.meal_table.insert("", "end", values=(meal["name"], f"{meal['price']} PLN"))
             self.meal_table.item(row_id, tags=row_id)
             self.meal_table.tag_bind(row_id, "<Button-1>", lambda event, meal_id=meal["meal_id"]: self.add_meal_to_order(meal_id))
 
@@ -220,3 +247,18 @@ class OrderEditor(tk.Frame):
         self.manager.switch_to("TabletopDashboard",
                             table_id=self.manager.current_table_id,
                             table_name=self.table_name)
+
+    def show_all_meals(self):
+        self.update_meal_table()
+
+    def filter_meals_by_category(self, category):
+        filtered_meals = [meal for meal in self.meals if meal["category"] == category]
+        self.update_meal_table(filtered_meals)
+
+    def update_meal_table(self, meals=None):
+        self.meal_table.delete(*self.meal_table.get_children())
+        meals_to_display = meals if meals else self.meals
+        for meal in meals_to_display:
+            row_id = self.meal_table.insert("", "end", values=(meal["name"], f"{meal['price']} PLN"))
+            self.meal_table.item(row_id, tags=row_id)
+            self.meal_table.tag_bind(row_id, "<Button-1>", lambda event, meal_id=meal["meal_id"]: self.add_meal_to_order(meal_id))

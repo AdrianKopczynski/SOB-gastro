@@ -16,7 +16,7 @@ class AdminPanel(tk.Frame):
     def create_navbar(self):
         self.navbar_frame = tk.Frame(self, bg="lightgray")
         self.navbar_frame.grid(row=0, column=0, sticky="ew")
-        self.navbar_frame.grid_columnconfigure(0, weight=1)  # Rozciągnięcie na całą szerokość
+        self.navbar_frame.grid_columnconfigure(0, weight=1)
 
         style = ttk.Style()
         style.configure("TButton", background="lightgray", foreground="black", font=("Arial", 15), padding=5)
