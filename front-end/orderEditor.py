@@ -27,7 +27,7 @@ class OrderEditor(tk.Frame):
         if os.path.exists(MEALS_FILE):
             with open(MEALS_FILE, "r", encoding="utf-8") as file:
                 meals = json.load(file)
-                self.categories = list(set(meal["category"] for meal in meals))  # Pobierz unikalne kategorie
+                self.categories = list(set(meal["category"] for meal in meals))
                 return meals
         else:
             messagebox.showerror("Błąd", "Plik meals.json nie istnieje!")

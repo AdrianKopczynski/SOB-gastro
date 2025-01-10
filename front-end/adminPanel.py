@@ -240,7 +240,7 @@ class AdminPanel(tk.Frame):
                     error_label.pack(pady=10)
                     self.after(3000, lambda: error_label.destroy())
 
-            tk.Button(self.dynamic_frame, text="Potwierdź usunięcie", command=confirm_deletion,
+            tk.Button(self.dynamic_frame, text="Usun", command=confirm_deletion,
                     fg="white", bg="red", font=("Arial", 12)).pack(pady=10)
 
         else:
