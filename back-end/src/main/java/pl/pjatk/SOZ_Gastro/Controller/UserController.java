@@ -3,6 +3,7 @@ package pl.pjatk.SOZ_Gastro.Controller;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.pjatk.SOZ_Gastro.Enums.UserType;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.UserService;
 
@@ -51,15 +52,42 @@ public class UserController
         return ResponseEntity.ok().body(this.userService.createUser(user));
     }
 
+    //Puts
+    @PutMapping("/updateUsername/{username}")
+    public ResponseEntity<User> updateUsernameBy(@PathVariable String username, @RequestParam String newUsername)
+    {
+        return ResponseEntity.ok().body(this.userService.updateUsername(username, newUsername));
+    }
+
+    @PutMapping("/updatePin/{loginPin}")
+    public ResponseEntity<User> updateLogin(@PathVariable String loginPin, @RequestParam String newLoginPin)
+    {
+        return ResponseEntity.ok().body(this.userService.updateLoginPin(loginPin, newLoginPin));
+    }
+
+    @PutMapping("/updateUserType/{username}")
+    public ResponseEntity<User> updateUserType(@PathVariable String username, @RequestParam UserType userType)
+    {
+        return ResponseEntity.ok().body(this.userService.updateUserType(username, userType));
+    }
+
+    @PutMapping("/updateEnabled/{username}")
+    public ResponseEntity<User> updateEnabled(@PathVariable String username, @RequestParam boolean enabled)
+    {
+        return ResponseEntity.ok().body(this.userService.updateEnabled(username, enabled));
+    }
+
     //Deletes
     @DeleteMapping("/deleteUserByUsername/{username}")
-    public ResponseEntity<String> deleteUserByUsername(@PathVariable("username") String username) {
+    public ResponseEntity<String> deleteUserByUsername(@PathVariable("username") String username)
+    {
         this.userService.deleteUserByUsername(username);
         return ResponseEntity.ok().body("User deleted");
     }
 
     @DeleteMapping("/deleteUserById/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable("id") Long id) {
+    public ResponseEntity<String> deleteUserById(@PathVariable("id") Long id)
+    {
         this.userService.deleteUserById(id);
         return ResponseEntity.ok().body("User deleted");
     }

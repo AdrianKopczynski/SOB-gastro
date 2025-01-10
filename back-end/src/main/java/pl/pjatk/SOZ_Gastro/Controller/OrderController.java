@@ -4,6 +4,7 @@ import org.apache.coyote.BadRequestException;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.CreateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
@@ -23,9 +24,11 @@ public class OrderController
 
     /// Podać jakoś listę zamówionych
     @PostMapping("/createOrder")
-    public ResponseEntity<Order> createOrder(Long[] mealID, Tabletop tabletop)
-    {
-        Order order = orderService.addNewOrder(mealID,tabletop);
+    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
+        Long[] mealID = createOrderRequest.getMealID();
+        Tabletop tabletop = createOrderRequest.getTabletop();
+
+        Order order = orderService.addNewOrder(mealID, tabletop);
         return ResponseEntity.ok(order);
     }
 
