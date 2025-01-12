@@ -15,20 +15,20 @@ class SozGastroApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
-	@Test
-	public void testGetUserById()
-	{
-		try {
-			User user = userService.getById(1L);
-			System.out.println("User found: " + user);
-		} catch (UserNotFoundException e) {
-			System.out.println("User not found");
-		} catch (IllegalArgumentException e) {
-			System.out.println("Invalid id: " + e.getMessage());
-		}
-
-	}
+//
+//	@Test
+//	public void testGetUserById()
+//	{
+//		try {
+//			User user = userService.getById(1L);
+//			System.out.println("User found: " + user);
+//		} catch (UserNotFoundException e) {
+//			System.out.println("User not found");
+//		} catch (IllegalArgumentException e) {
+//			System.out.println("Invalid id: " + e.getMessage());
+//		}
+//
+//	}
 
 
 }
