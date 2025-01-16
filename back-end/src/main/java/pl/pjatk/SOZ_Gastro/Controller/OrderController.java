@@ -1,17 +1,12 @@
 package pl.pjatk.SOZ_Gastro.Controller;
 
-import org.apache.coyote.BadRequestException;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.CreateOrderRequest;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.CreateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.UpdateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.OrderService;
-import pl.pjatk.SOZ_Gastro.Services.UserService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -32,17 +27,32 @@ public class OrderController
         return ResponseEntity.ok(order);
     }
 
-    @GetMapping("/getorder/{id}")
+    @GetMapping("/getOrder/{id}")
     public ResponseEntity<Order> getOrderFromID(@PathVariable("id")int id)
     {
         Order order = orderService.findByID(id);
         return ResponseEntity.ok(order);
     }
 
+    @PostMapping("/closeOrder/{id}")
+    public ResponseEntity<Order> closeOrder(@PathVariable("id")int id)
+    {
+        Order order = orderService.findByID(id);
+        orderService.closeOrder(order);
+        return ResponseEntity.ok(order);
+    }
 
+    @PatchMapping("/updateOrder/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable("id")int id, @RequestBody UpdateOrderRequest updateOrderRequest)
+    {
+        Long[] mealID = updateOrderRequest.getMealID();
+
+        Order order = orderService.findByID(id);
+        orderService.updateOrder(mealID, id);
+        return ResponseEntity.ok(order);
+    }
 
     /* TODO
-        - Stworzenie zamówienia
         - Zamknięcie zamówienia
         - Dodanie pozycji do zamówienia (tylko jeśli dalej otwarte)
 

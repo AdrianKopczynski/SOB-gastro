@@ -1,4 +1,6 @@
-package pl.pjatk.SOZ_Gastro.ObjectClasses;
+package pl.pjatk.SOZ_Gastro.ObjectClasses.Requests;
+
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 
 public class CreateOrderRequest {
     private Long[] mealID;
