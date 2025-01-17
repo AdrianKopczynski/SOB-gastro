@@ -69,6 +69,11 @@ public class Order {
         return createdAt;
     }
 
+    public boolean isClosed()
+    {
+        return (closedAt != null);
+    }
+
     public void closeOrder()
     {
         closedAt = Instant.now();

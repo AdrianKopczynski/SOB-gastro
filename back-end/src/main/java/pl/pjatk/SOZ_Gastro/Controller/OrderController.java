@@ -17,46 +17,27 @@ public class OrderController
 
     public OrderController(OrderService orderService) { this.orderService = orderService;}
 
-    /// Podać jakoś listę zamówionych
     @PostMapping("/createOrder")
-    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
-        Long[] mealID = createOrderRequest.getMealID();
-        Tabletop tabletop = createOrderRequest.getTabletop();
-
-        Order order = orderService.addNewOrder(mealID, tabletop);
-        return ResponseEntity.ok(order);
+    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest)
+    {
+        return ResponseEntity.ok(orderService.addNewOrder(createOrderRequest.getMealID(), createOrderRequest.getTabletop()));
     }
 
     @GetMapping("/getOrder/{id}")
     public ResponseEntity<Order> getOrderFromID(@PathVariable("id")int id)
     {
-        Order order = orderService.findByID(id);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(orderService.findByID(id));
     }
 
     @PostMapping("/closeOrder/{id}")
     public ResponseEntity<Order> closeOrder(@PathVariable("id")int id)
     {
-        Order order = orderService.findByID(id);
-        orderService.closeOrder(order);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(orderService.closeOrder(orderService.findByID(id)));
     }
 
     @PatchMapping("/updateOrder/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable("id")int id, @RequestBody UpdateOrderRequest updateOrderRequest)
     {
-        Long[] mealID = updateOrderRequest.getMealID();
-
-        Order order = orderService.findByID(id);
-        orderService.updateOrder(mealID, id);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(orderService.updateOrder(updateOrderRequest.getMealID(), orderService.findByID(id)));
     }
-
-    /* TODO
-        - Zamknięcie zamówienia
-        - Dodanie pozycji do zamówienia (tylko jeśli dalej otwarte)
-
-        Czy to wszystko?
-     */
-
 }
