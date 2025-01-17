@@ -48,14 +48,16 @@ class WindowManager:
         self.root.grid_rowconfigure(2, weight=10, minsize=500)
         self.root.grid_columnconfigure(0, weight=1)
 
-    def set_username(self, username):
+    def set_username(self, username,userType):
         self.username = username
         self.update_greeting()
 
-        # if username == "admin":  # TODO: zastąpić sprawdzanie na podstawie bazy danych
-        self.admin_button.grid()
-        # else:
-        # self.admin_button.grid_remove()
+        if userType == "Admin":
+            self.admin_button.grid()
+            self.greeting_label.grid_remove()
+        else:
+            self.admin_button.grid_remove()
+            self.greeting_label.grid()
 
     def update_admin_button(self, in_admin_panel):
         if in_admin_panel:

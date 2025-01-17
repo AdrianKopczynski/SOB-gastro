@@ -1,11 +1,18 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
-from requestHandler import RequestHandler
+from requestHandler import RequestHandler as rh
 import json
 import os
 
 base_dir = os.path.dirname(os.path.abspath(__file__)) #poki operujemy na plikach to dodaje bo jesli uzywas vscode a pycharma to inaczej pliki moze struturyzowac
 file_path = os.path.join(base_dir, 'users2.json')
+try:
+    with open('config.json', "r", encoding="utf-8") as file:
+        config = json.load(file)
+        db = rh(config[0]['connection_addr'])
+except FileNotFoundError:
+    print("Cannot get connection adress!")
+
 
 class AdminPanel(tk.Frame):
     def __init__(self, master, manager, request_handler):
@@ -113,15 +120,15 @@ class AdminPanel(tk.Frame):
         
     def load_users(self):
         try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                users = json.load(file)
-        except FileNotFoundError:
+            users = rh.get_all_users(db)
+        except TypeError as err:
+            print(f"Error while loading users, error message: {err}")
             users = []
 
         self.users_listbox.delete(*self.users_listbox.get_children())
         for user in users:
             self.users_listbox.insert(
-                "", "end", values=(user['user_id'], user['user_name'], user['user_type'], "Tak" if user['enabled'] else "Nie")
+                "", "end", values=(user['id'], user['username'], user['userType'], "Tak" if user['enabled'] else "Nie")
             )
 
     def show_add_user_form(self, parent_frame):
@@ -139,7 +146,7 @@ class AdminPanel(tk.Frame):
         pin_entry.pack(pady=5)
 
         tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
-        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Kasjer", "Magazynier"], font=("Arial", 14))
+        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
         user_type_combo.pack(pady=5)
 
         def submit():
@@ -156,55 +163,29 @@ class AdminPanel(tk.Frame):
                 return
 
             # if self.request_handler.check_user_exists(user_name):
-            if self.check_user_exists(user_name):
+            if self.check_username_exists(user_name):
                 tk.Label(self.dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
-
-            # success = self.request_handler.create_user({
-            #     "user_name": user_name,
-            #     "login_pin": login_pin,
-            #     "user_type": user_type,
-            # })
-            # if success:
-            #     self.load_users()
-            #     tk.Label(self.dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
-            # else:
-            #     tk.Label(self.dynamic_frame, text="Nie udało się dodać użytkownika.", fg="red", font=("Arial", 12)).pack(pady=5)
+            
+            if self.check_pin_exists(login_pin):
+                tk.Label(self.dynamic_frame, text="Pin jest już w użyciu!", fg="red", font=("Arial", 12)).pack(pady=5)
+                return
 
             new_user = {
-                "user_id": self.get_next_user_id(),
-                "user_name": user_name,
-                "login_pin": login_pin,
-                "user_type": user_type,
-                "enabled": True
+                "username": user_name,
+                "loginPin": login_pin,
+                "userType": user_type,
+                "enabled": "True"
             }
+            success = rh.create_user(db,new_user)
 
-            try:
-                with open(file_path, "r", encoding="utf-8") as file:
-                    users = json.load(file)
-            except FileNotFoundError:
-                users = []
-
-            users.append(new_user)
-
-            with open(file_path, "w", encoding="utf-8") as file:
-                json.dump(users, file, indent=4)
-
-            self.load_users()
-            tk.Label(self.dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
+            if success:
+                self.load_users()
+                tk.Label(self.dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
+            else:
+                tk.Label(self.dynamic_frame, text="Nie udało się dodać użytkownika.", fg="red", font=("Arial", 12)).pack(pady=5)
         
         tk.Button(self.dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
-
-    def get_next_user_id(self): #ta funckje jest potrzebna tylko dlatego ze nie mamy bazy - potem do wywalenia
-        try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                users = json.load(file)
-            if users:
-                return max(user["user_id"] for user in users) + 1
-        except FileNotFoundError:
-            pass
-        return 1
-
 
     def delete_user(self):
         selected_item = self.users_listbox.selection()
@@ -217,13 +198,14 @@ class AdminPanel(tk.Frame):
 
             def confirm_deletion():
                 try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
+                    """with open(file_path, 'r', encoding='utf-8') as f:
                         users = json.load(f)
 
                     updated_users = [user for user in users if user["user_id"] != user_id]
 
                     with open(file_path, 'w', encoding='utf-8') as f:
-                        json.dump(updated_users, f, indent=4)
+                        json.dump(updated_users, f, indent=4)"""
+                    rh.delete_user_by_id(db, user_id)
 
                     self.load_users()
 
@@ -255,15 +237,16 @@ class AdminPanel(tk.Frame):
         for widget in self.dynamic_frame.winfo_children():
             widget.destroy()
 
-    def check_user_exists(self, user_name):
-        # users = self.get_all_users() # Trzeba dodac pozniej jak funkcje z requestHandlera!!!
-        # for user in users:
-        #     if user["user_name"] == user_name:
-        #         return True
-        # return False
-        try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                users = json.load(file)
-            return any(user["user_name"] == user_name for user in users)
-        except FileNotFoundError:
-            return False
+    def check_username_exists(self, userName):
+        users = rh.get_all_users(db)
+        for user in users:
+            if user["username"] == userName:
+                return True
+        return False
+    
+    def check_pin_exists(self, loginPin):
+        users = rh.get_all_users(db)
+        for user in users:
+            if user["loginPin"] == loginPin:
+                return True
+        return False
