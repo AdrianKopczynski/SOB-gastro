@@ -2,6 +2,14 @@ import tkinter as tk
 from tkinter import messagebox
 import json
 import os
+from requestHandler import RequestHandler as rh
+
+try:
+    with open('config.json', "r", encoding="utf-8") as file:
+        config = json.load(file)
+        db = rh(config[0]['connection_addr'])
+except FileNotFoundError:
+    print("Cannot get connection adress!")
 
 class LoginScreen(tk.Frame):
     def __init__(self, master, manager):
@@ -49,9 +57,16 @@ class LoginScreen(tk.Frame):
         self.pin_label.grid(row=4, column=0, columnspan=3, pady=20, sticky="ew")
 
         def submit_pin():
-            username = self.check_pin(self.value)
+            data = self.check_pin(self.value)
+            try:
+                username = data[0]
+                userType = data[1]
+            except TypeError:
+                username = ''
+                userType = ''
+
             if username:
-                self.manager.set_username(username)
+                self.manager.set_username(username,userType)
                 self.manager.switch_to("TabletopEditor")
             else:
                 self.value = ""
@@ -74,18 +89,10 @@ class LoginScreen(tk.Frame):
 
     def check_pin(self, pin):
         try:
-            base_dir = os.path.dirname(os.path.abspath(__file__))
-            file_path = os.path.join(base_dir, 'users.json')
-            
-            with open(file_path, 'r', encoding='utf-8') as f:
-                users = json.load(f)
-            for username, stored_pin in users.items():
-                if stored_pin == pin:
-                    return username
+            user = rh.get_user_by_pin(db,pin)
+            if user is not None:
+                return user['username'],user['userType']
             return None
-        except FileNotFoundError:
-            messagebox.showerror("Błąd", "Plik z użytkownikami nie istnieje!")
-            return None
-        except json.JSONDecodeError:
-            messagebox.showerror("Błąd", "Niepoprawny format pliku użytkowników!")
+        except Exception as e:
+            messagebox.showerror("Error", f"{e}")
             return None
