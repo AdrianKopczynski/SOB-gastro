@@ -13,6 +13,7 @@ public class Category {
     private String name;
 
     public Category(Long id, String name) {
+        validateNameOrThrowError(name);
         this.id = id;
         this.name = name;
     }
@@ -34,6 +35,13 @@ public class Category {
     }
 
     public void setName(String name) {
+        validateNameOrThrowError(name);
         this.name = name;
+    }
+
+    public void validateNameOrThrowError(String name){
+        if (InputStringMysqlValidator.containsForbiddenCharacters(name)) {
+            throw new IllegalArgumentException("name contains forbidden characters " + name);
+        }
     }
 }

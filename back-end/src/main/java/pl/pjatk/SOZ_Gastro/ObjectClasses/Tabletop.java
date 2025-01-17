@@ -15,6 +15,7 @@ public class Tabletop {
     private boolean isAvailable;
 
     public Tabletop(Long id, String name, boolean isAvailable) {
+        validateNameOrThrowError(name);
         this.id = id;
         this.name = name;
         this.isAvailable=isAvailable;
@@ -37,7 +38,14 @@ public class Tabletop {
     }
 
     public void setName(String name) {
+        validateNameOrThrowError(name);
         this.name = name;
+    }
+
+    public void validateNameOrThrowError(String name){
+        if (InputStringMysqlValidator.containsForbiddenCharacters(name)) {
+            throw new IllegalArgumentException("name contains forbidden characters " + name);
+        }
     }
 
     public boolean isAvailable() {
