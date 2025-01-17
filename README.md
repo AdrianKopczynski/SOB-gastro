@@ -23,10 +23,10 @@ All other rules not mentioned in this document are present in PEP 8 documentatio
 
 <b>Repository Work Instruction and rules:</b>
 
-1.Repository for SOZ-Gastro software is https://github.com/AdrianKopczynski/SOZ-gastro
-2.Default branch is “main”
-3.Every user has to have his own branch with no naming restrictions.
-4.To merge changes to the main branch, every user has to open Pull Request, all changes must be approved by at least one team member.
-5.Every conversation has to be resolved before merging.
-6.After merging changes, every other user has to update and rebase his branch pointing to the main branch, especially before merging his own changes.
+1.Repository for SOZ-Gastro software is https://github.com/AdrianKopczynski/SOZ-gastro <br>
+2.Default branch is “main” <br>
+3.Every user has to have his own branch with no naming restrictions. <br>
+4.To merge changes to the main branch, every user has to open Pull Request, all changes must be approved by at least one team member. <br>
+5.Every conversation has to be resolved before merging. <br>
+6.After merging changes, every other user has to update and rebase his branch pointing to the main branch, especially before merging his own changes. <br>
 
