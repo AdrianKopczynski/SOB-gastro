@@ -41,7 +41,7 @@ public class ManagementService {
 
     public Category updateCategory (Category category, long id){
         Category tmp = categoryRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("no category with id " + id));
+                .orElseThrow(() -> new NoSuchElementException("no category with id: " + id));
         tmp.setName(category.getName());
         return categoryRepository.save(tmp);
     }
@@ -56,7 +56,7 @@ public class ManagementService {
 
     public Meal updateMeal (Meal meal, long id){
         Meal tmp = mealRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("no meal with id " + id));
+                .orElseThrow(() -> new NoSuchElementException("no meal with id: " + id));
         tmp.setName(meal.getName());
         tmp.setCategory(meal.getCategory());
         tmp.setPrice(meal.getPrice());
@@ -65,7 +65,7 @@ public class ManagementService {
 
     public Meal updateMealPrice (long id, BigDecimal price){
         Meal tmp = mealRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("no meal with id " + id));
+                .orElseThrow(() -> new NoSuchElementException("no meal with id: " + id));
         tmp.setPrice(price);
         return mealRepository.save(tmp);
     }
@@ -78,7 +78,7 @@ public class ManagementService {
     }
 
     public boolean deleteMeal(long id){
-        if (!mealRepository.existsById(id)) throw new NoSuchElementException("no meal with id " + id);
+        if (!mealRepository.existsById(id)) throw new NoSuchElementException("no meal with id: " + id);
         mealRepository.deleteById(id);
         return true;
     }
@@ -88,7 +88,7 @@ public class ManagementService {
     }
 
     public List<Meal> getMealListByCategoryName(String categoryName){
-        if (!categoryRepository.existsByName(categoryName)) throw new NoSuchElementException("no category with name " + categoryName);
+        if (!categoryRepository.existsByName(categoryName)) throw new NoSuchElementException("no category with name: " + categoryName);
         return mealRepository.findAllByCategoryName(categoryName);
     }
 
@@ -99,15 +99,25 @@ public class ManagementService {
 
     public Tabletop updateTabletop (Tabletop tabletop, long id){
         Tabletop tmp = tabletopRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("no tableTop with " + id));
+                .orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
         tmp.setName(tabletop.getName());
         tmp.setAvailable(tabletop.isAvailable());
         return tabletopRepository.save(tmp);
     }
 
+    public Tabletop getTabletop(Long id)
+    {
+        if (id == null)
+        {
+            throw new IllegalArgumentException("Tabletop id cannot be null");
+        }
+        return tabletopRepository.findById(id).
+                orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
+    }
+
     public Tabletop toggleAvailableTabletopById (long id){
         Tabletop tmp = tabletopRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("no tableTop with " + id));
+                .orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
         tmp.setAvailable(!tmp.isAvailable());
         return tabletopRepository.save(tmp);
     }

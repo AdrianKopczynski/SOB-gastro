@@ -82,4 +82,10 @@ public class ManagementController {
 
     @GetMapping("/getAvailableTabletopList")
     public ResponseEntity<List<Tabletop>> getAvailableTabletopList() {return ResponseEntity.ok(managementService.getAvailableTabletopList());}
+
+    @GetMapping("/getTabletopById/{id}")
+    public ResponseEntity<Tabletop> getTabletopById(@PathVariable("id") Long id)
+    {
+        return ResponseEntity.ok().body(managementService.getTabletop(id));
+    }
 }

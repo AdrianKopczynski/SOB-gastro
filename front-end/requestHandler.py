@@ -1,5 +1,6 @@
 import requests
 import json
+import os
 
 class RequestHandler:
     def __init__(self, base_url):
@@ -67,53 +68,56 @@ class RequestHandler:
     #--------------------------------------------------------------#
 
     def get_user_by_pin(self, pin):
-        self.send_get_request("user/getUserByPin", pin)
+        return self.send_get_request(f"user/getUserByPin/{pin}")
 
     def get_user_by_id(self, id):
-        self.send_get_request("user/getUserById", id)
+        return self.send_get_request(f"user/getUserById/{id}")
     
     def get_all_users(self):
-        self.send_get_request("user/getAllUsers")
+        return self.send_get_request("user/getAllUsers")
 
     def get_user_by_username(self, username):
-        self.send_get_request("user/getUserByUsername", username)
+        return self.send_get_request(f"user/getUserByUsername{username}")
 
     def create_user(self, user):
-        self.send_post_request("user/createUser", user)
-
-    def delete_user_by_username(self, username):
-        self.send_delete_request("user/deleteUserByUsername", username)
+        return self.send_post_request("user/createUser", user)
 
     def delete_user_by_id(self, id):
-        self.send_delete_request("user/deleteUserById", id)
+        return self.send_delete_request(f"user/deleteUserById/{id}")
 
     #--------------------------------------------------------------#
     #---------------------------ORDER------------------------------#
     #--------------------------------------------------------------#
 
-    def create_order(self, order):
-        self.send_post_request("order/createOrder", order)
+    def get_orders_by_table(self, table_id):
+        return self.send_get_request("order/getOrdersByTable", {"Table_id": table_id})
 
-    def get_order_by_id(self, id):
-        self.send_get_request("order/getorder", id)
+    def create_order(self, order_data):
+        return self.send_post_request("order/createOrder", order_data)
+
+    def edit_order(self, order_id, updated_data):
+        return self.send_post_request("order/updateOrder", {"order_id": order_id, **updated_data})
+
+    def delete_order(self, order_id):
+        return self.send_delete_request("order/deleteOrder", {"order_id": order_id})
 
     #--------------------------------------------------------------#
     #-------------------------MENAGEMENT---------------------------#
     #--------------------------------------------------------------#
     
     def create_category(self, name):
-        self.send_post_request("management/addCategory", name)
+        return self.send_post_request("management/addCategory", name)
 
     def get_category(self):
-        self.send_get_request("management/getCategoryList")
+        return self.send_get_request("management/getCategoryList")
 
     def add_meal(self,meal):
-        self.send_post_request("management/addMeal", meal)
+        return self.send_post_request("management/addMeal", meal)
 
     def add_tabletop(self):
-        self.send_post_request("management/addTabletop")
+        return self.send_post_request("management/addTabletop")
 
     def get_meals(self):
-        self.send_get_request("management/getMealList")
+        return self.send_get_request("management/getMealList")
 
 
