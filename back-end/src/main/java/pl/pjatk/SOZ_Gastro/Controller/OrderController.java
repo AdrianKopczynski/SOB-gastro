@@ -1,17 +1,12 @@
 package pl.pjatk.SOZ_Gastro.Controller;
 
-import org.apache.coyote.BadRequestException;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.CreateOrderRequest;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.CreateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.UpdateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.OrderService;
-import pl.pjatk.SOZ_Gastro.Services.UserService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -22,31 +17,27 @@ public class OrderController
 
     public OrderController(OrderService orderService) { this.orderService = orderService;}
 
-    /// Podać jakoś listę zamówionych
     @PostMapping("/createOrder")
-    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
-        Long[] mealID = createOrderRequest.getMealID();
-        Tabletop tabletop = createOrderRequest.getTabletop();
-
-        Order order = orderService.addNewOrder(mealID, tabletop);
-        return ResponseEntity.ok(order);
+    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest)
+    {
+        return ResponseEntity.ok(orderService.addNewOrder(createOrderRequest.getMealID(), createOrderRequest.getTabletop()));
     }
 
-    @GetMapping("/getorder/{id}")
+    @GetMapping("/getOrder/{id}")
     public ResponseEntity<Order> getOrderFromID(@PathVariable("id")int id)
     {
-        Order order = orderService.findByID(id);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(orderService.findByID(id));
     }
 
+    @PostMapping("/closeOrder/{id}")
+    public ResponseEntity<Order> closeOrder(@PathVariable("id")int id)
+    {
+        return ResponseEntity.ok(orderService.closeOrder(orderService.findByID(id)));
+    }
 
-
-    /* TODO
-        - Stworzenie zamówienia
-        - Zamknięcie zamówienia
-        - Dodanie pozycji do zamówienia (tylko jeśli dalej otwarte)
-
-        Czy to wszystko?
-     */
-
+    @PatchMapping("/updateOrder/{id}")
+    public ResponseEntity<Order> updateOrder(@PathVariable("id")int id, @RequestBody UpdateOrderRequest updateOrderRequest)
+    {
+        return ResponseEntity.ok(orderService.updateOrder(updateOrderRequest.getMealID(), orderService.findByID(id)));
+    }
 }
