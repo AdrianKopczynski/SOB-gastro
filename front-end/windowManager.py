@@ -14,7 +14,7 @@ class WindowManager:
         self.current_frame = None
         self.username = ""
         self.current_table_id = None
-        self.request_handler = RequestHandler(base_url="http://localhost:10000")
+        # self.request_handler = RequestHandler(base_url="http://localhost:10000")
         self.root.bind("<Escape>", self.exit_application)
 
         self.header_frame = tk.Frame(self.root, bg="lightgray")
@@ -112,6 +112,14 @@ class WindowManager:
             self.logout_button.grid()
             self.exit_button.grid_remove()
             self.update_admin_button(True)
+        
+        elif frame_name == "OrderSummary":
+            order = kwargs.get("order", None)
+            table_name = kwargs.get("table_name", "")
+            self.current_frame = OrderSummary(self.root, self, order=order, table_name=table_name)
+            self.logout_button.grid()
+            self.exit_button.grid_remove()
+
 
         
         self.update_greeting()
