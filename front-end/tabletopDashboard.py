@@ -140,4 +140,7 @@ class TabletopDashboard(tk.Frame):
             messagebox.showerror("Error", "Order not found.")
             return
 
+        if "meals" not in selected_order:
+            selected_order["meals"] = []
+
         self.manager.switch_to("OrderSummary", order=selected_order, table_name=self.table_name)
