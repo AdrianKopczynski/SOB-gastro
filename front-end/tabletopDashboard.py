@@ -124,4 +124,23 @@ class TabletopDashboard(tk.Frame):
 
 
     def close_order(self):
-        pass
+        selected_item = self.orders_list.selection()
+        if not selected_item:
+            messagebox.showwarning("Warning", "No order selected.")
+            return
+
+        order_data = self.orders_list.item(selected_item)["values"]
+        order_id = order_data[0]
+
+        with open(ORDERS_FILE, "r", encoding="utf-8") as file:
+            all_orders = json.load(file)
+
+        selected_order = next((order for order in all_orders if order["order_id"] == order_id), None)
+        if not selected_order:
+            messagebox.showerror("Error", "Order not found.")
+            return
+
+        if "meals" not in selected_order:
+            selected_order["meals"] = []
+
+        self.manager.switch_to("OrderSummary", order=selected_order, table_name=self.table_name)
