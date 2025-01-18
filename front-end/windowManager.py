@@ -15,7 +15,7 @@ class WindowManager:
         self.current_frame = None
         self.username = ""
         self.current_table_id = None
-        # self.request_handler = RequestHandler(base_url="http://localhost:10000")
+        self.request_handler = RequestHandler(base_url="http://localhost:10000")
         self.root.bind("<Escape>", self.exit_application)
 
         self.header_frame = tk.Frame(self.root, bg="lightgray")
