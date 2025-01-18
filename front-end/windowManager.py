@@ -6,6 +6,7 @@ from tabletopEditor import TabletopEditor
 from orderEditor import OrderEditor
 from adminPanel import AdminPanel
 from requestHandler import RequestHandler 
+from orderSummary import OrderSummary
 
 
 class WindowManager:
