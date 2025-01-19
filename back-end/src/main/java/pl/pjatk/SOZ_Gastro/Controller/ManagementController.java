@@ -23,6 +23,10 @@ public class ManagementController {
     public ResponseEntity<Category> addCategory(@RequestBody Category category){
         return ResponseEntity.ok(managementService.addCategory(category));
     }
+    @DeleteMapping("/deleteCategory/{id}")
+    public ResponseEntity<Boolean> deleteCategory(@PathVariable long id){
+        return ResponseEntity.ok(managementService.deleteCategory(id));
+    }
 
     @PutMapping("/updateCategory/{id}")
     public ResponseEntity<Category> updateCategory(@RequestBody Category category, @PathVariable long id){

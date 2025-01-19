@@ -46,6 +46,18 @@ public class ManagementService {
         return categoryRepository.save(tmp);
     }
 
+    public boolean deleteCategory (long id){
+        if (!categoryRepository.existsById(id)) throw new NoSuchElementException("no category with id: " + id);
+        Category tmp = categoryRepository.findById(id).orElseThrow();
+        List<Meal> meals = mealRepository.findAllByCategoryName(tmp.getName());
+        meals.forEach(meal -> meal.setCategory(getCategory(1L)));
+        categoryRepository.deleteById(id);
+        return true;
+    }
+
+    public Category getCategory (long id){
+        return categoryRepository.findById(id).orElseThrow();
+    }
 
     public List<Category> getCategoryList(){
         return categoryRepository.findAllByIdIsNotNull();
