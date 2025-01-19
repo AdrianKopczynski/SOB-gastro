@@ -8,10 +8,6 @@ public class SozGastroApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SozGastroApplication.class, args);
-		initData();
 	}
 
-	public static void initData(){
-		System.out.println("initData");
-	}
 }
