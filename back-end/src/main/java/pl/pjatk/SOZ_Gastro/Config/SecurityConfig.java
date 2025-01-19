@@ -22,6 +22,8 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/order/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/user/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/error**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/v3/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                         //.requestMatchers(new AntPathRequestMatcher("/restricted/**")).hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
