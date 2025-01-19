@@ -81,6 +81,7 @@ class AdminPanel(tk.Frame):
 
         actions = [
             ("Dodaj użytkownika", lambda: self.show_add_user_form(frame)),
+            ("Edytuj użytkownika", self.show_edit_user_form),
             ("Usuń użytkownika", self.delete_user),
         ]
 
@@ -233,6 +234,59 @@ class AdminPanel(tk.Frame):
             self.after(3000, lambda: warning_label.destroy())
 
             
+    def show_edit_user_form(self):  #testowałem na pliku czy działa
+        selected_item = self.users_listbox.selection()
+        if not selected_item:
+            messagebox.showwarning("Brak wyboru", "Proszę wybrać użytkownika do edycji.")
+            return
+
+        user_data = self.users_listbox.item(selected_item, "values")
+        user_id, username, user_type = user_data[:3]
+
+        for widget in self.dynamic_frame.winfo_children():
+            widget.destroy()
+
+        tk.Label(self.dynamic_frame, text="Edytuj użytkownika", font=("Arial", 18)).pack(pady=10)
+
+        tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
+        username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        username_entry.insert(0, username)
+        username_entry.pack(pady=5)
+
+        tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
+        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
+        user_type_combo.set(user_type)
+        user_type_combo.pack(pady=5)
+
+        def submit():
+            new_username = username_entry.get().strip()
+            new_user_type = user_type_combo.get()
+
+            if not new_username or not new_user_type:
+                messagebox.showerror("Błąd", "Wszystkie pola są wymagane!")
+                return
+
+            try:
+                with open("users2.json", "r", encoding="utf-8") as f:
+                    users = json.load(f)
+
+                for user in users:
+                    if user["id"] == int(user_id):
+                        user["username"] = new_username
+                        user["userType"] = new_user_type
+                        break
+
+                with open("users2.json", "w", encoding="utf-8") as f:
+                    json.dump(users, f, indent=4)
+
+                self.load_users()
+                messagebox.showinfo("Sukces", "Użytkownik został zaktualizowany.")
+
+            except FileNotFoundError:
+                messagebox.showerror("Błąd", "Plik u nie istnieje.")
+
+        tk.Button(self.dynamic_frame, text="Zapisz", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+
     def clear_dynamic_frame(self):
         for widget in self.dynamic_frame.winfo_children():
             widget.destroy()
