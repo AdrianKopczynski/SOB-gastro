@@ -19,6 +19,9 @@ class AdminPanel(tk.Frame):
         super().__init__(master)
         self.manager = manager
         self.request_handler = request_handler
+        self.categories = []  # Dodane na testy
+        self.meals = [] # Dodane na testy
+
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1) 
         self.grid_columnconfigure(0, weight=1)
@@ -40,20 +43,27 @@ class AdminPanel(tk.Frame):
         self.user_tab_button = ttk.Button(self.navbar_frame, text="Edycja użytkowników", command=lambda: self.switch_tab("user"))
         self.user_tab_button.grid(row=0, column=1, sticky="w", padx=5)
 
+        self.category_meal_tab_button = ttk.Button(self.navbar_frame, text="Kategorie i Posiłki", command=lambda: self.switch_tab("category_meal"))
+        self.category_meal_tab_button.grid(row=0, column=2, sticky="w", padx=5)
+
     def create_layout(self):
 
         self.main_tab = tk.Frame(self)
         self.user_tab = tk.Frame(self)
+        self.category_meal_tab = tk.Frame(self)
 
         self.tabs = {
             "main": self.main_tab,
-            "user": self.user_tab
+            "user": self.user_tab,
+            "category_meal": self.category_meal_tab,
         }
 
         self.create_main_tab()
         self.create_user_tab()
+        self.create_category_meal_tab()
 
-        self.switch_tab("user")
+
+        self.switch_tab("main")
 
     def switch_tab(self, tab_name):
         for tab in self.tabs.values():
@@ -81,6 +91,7 @@ class AdminPanel(tk.Frame):
 
         actions = [
             ("Dodaj użytkownika", lambda: self.show_add_user_form(frame)),
+            ("Edytuj użytkownika", self.show_edit_user_form),
             ("Usuń użytkownika", self.delete_user),
         ]
 
@@ -233,6 +244,59 @@ class AdminPanel(tk.Frame):
             self.after(3000, lambda: warning_label.destroy())
 
             
+    def show_edit_user_form(self):  #testowałem na pliku czy działa
+        selected_item = self.users_listbox.selection()
+        if not selected_item:
+            messagebox.showwarning("Brak wyboru", "Proszę wybrać użytkownika do edycji.")
+            return
+
+        user_data = self.users_listbox.item(selected_item, "values")
+        user_id, username, user_type = user_data[:3]
+
+        for widget in self.dynamic_frame.winfo_children():
+            widget.destroy()
+
+        tk.Label(self.dynamic_frame, text="Edytuj użytkownika", font=("Arial", 18)).pack(pady=10)
+
+        tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
+        username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        username_entry.insert(0, username)
+        username_entry.pack(pady=5)
+
+        tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
+        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
+        user_type_combo.set(user_type)
+        user_type_combo.pack(pady=5)
+
+        def submit():
+            new_username = username_entry.get().strip()
+            new_user_type = user_type_combo.get()
+
+            if not new_username or not new_user_type:
+                messagebox.showerror("Błąd", "Wszystkie pola są wymagane!")
+                return
+
+            try:
+                with open("users2.json", "r", encoding="utf-8") as f:
+                    users = json.load(f)
+
+                for user in users:
+                    if user["id"] == int(user_id):
+                        user["username"] = new_username
+                        user["userType"] = new_user_type
+                        break
+
+                with open("users2.json", "w", encoding="utf-8") as f:
+                    json.dump(users, f, indent=4)
+
+                self.load_users()
+                messagebox.showinfo("Sukces", "Użytkownik został zaktualizowany.")
+
+            except FileNotFoundError:
+                messagebox.showerror("Błąd", "Plik u nie istnieje.")
+
+        tk.Button(self.dynamic_frame, text="Zapisz", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+
     def clear_dynamic_frame(self):
         for widget in self.dynamic_frame.winfo_children():
             widget.destroy()
@@ -250,3 +314,208 @@ class AdminPanel(tk.Frame):
             if user["loginPin"] == loginPin:
                 return True
         return False
+    
+    def create_category_meal_tab(self):
+        self.category_meal_tab.grid_rowconfigure(0, weight=1)
+        self.category_meal_tab.grid_columnconfigure(0, weight=1)
+        self.category_meal_tab.grid_columnconfigure(1, weight=3)
+        self.category_meal_tab.grid_columnconfigure(2, weight=1)
+
+        buttons_frame = tk.Frame(self.category_meal_tab)
+        buttons_frame.grid(row=0, column=0, sticky="ns", padx=10, pady=10)
+
+        tk.Button(buttons_frame, text="Dodaj Kategorię", font=("Arial", 14), command=self.show_add_category_form).pack(fill="x", pady=10)
+        tk.Button(buttons_frame, text="Edytuj Kategorię", font=("Arial", 14), command=self.show_edit_category_form).pack(fill="x", pady=10)
+        tk.Button(buttons_frame, text="Usuń Kategorię", font=("Arial", 14), command=self.show_delete_category_confirmation).pack(fill="x", pady=10)
+        tk.Button(buttons_frame, text="Dodaj Posiłek", font=("Arial", 14), command=self.show_add_meal_form).pack(fill="x", pady=10)
+        tk.Button(buttons_frame, text="Edytuj Posiłek", font=("Arial", 14), command=self.show_edit_meal_form).pack(fill="x", pady=10)
+        tk.Button(buttons_frame, text="Usuń Posiłek", font=("Arial", 14), command=self.show_delete_meal_confirmation).pack(fill="x", pady=10)
+
+        lists_frame = tk.Frame(self.category_meal_tab)
+        lists_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+
+        tk.Label(lists_frame, text="Kategorie", font=("Arial", 18)).pack(pady=5)
+        self.category_table = ttk.Treeview(lists_frame, columns=("Nazwa"), show="headings")
+        self.category_table.heading("Nazwa", text="Nazwa")
+        self.category_table.column("Nazwa", width=200, anchor="w")
+        self.category_table.pack(fill="both", expand=True, pady=5)
+
+        tk.Label(lists_frame, text="Posiłki", font=("Arial", 18)).pack(pady=5)
+        self.meal_table = ttk.Treeview(lists_frame, columns=("Nazwa", "Cena", "Kategoria"), show="headings")
+        self.meal_table.heading("Nazwa", text="Nazwa")
+        self.meal_table.heading("Cena", text="Cena")
+        self.meal_table.heading("Kategoria", text="Kategoria")
+        self.meal_table.column("Nazwa", width=150, anchor="w")
+        self.meal_table.column("Cena", width=100, anchor="center")
+        self.meal_table.column("Kategoria", width=150, anchor="w")
+        self.meal_table.pack(fill="both", expand=True, pady=5)
+
+        self.dynamic_frame = tk.Frame(self.category_meal_tab, bg="white", relief="sunken", bd=2)
+        self.dynamic_frame.grid(row=0, column=2, sticky="nsew", padx=10, pady=10)
+
+    def show_add_category_form(self):
+        self.clear_dynamic_frame()
+        tk.Label(self.dynamic_frame, text="Dodaj Kategorię", font=("Arial", 18)).pack(pady=10)
+        category_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        category_entry.pack(pady=5)
+
+        def submit():
+            category = category_entry.get().strip()
+            if category and category not in self.categories:
+                self.categories.append(category)
+                self.category_table.insert("", "end", values=(category,))
+                self.display_message("Sukces", "Dodano kategorię.")
+            else:
+                self.display_message("Błąd", "Nieprawidłowa lub już istniejąca kategoria.")
+
+        tk.Button(self.dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+
+    def show_edit_category_form(self):
+        selected_item = self.category_table.selection()
+        if not selected_item:
+            self.display_message("Błąd", "Wybierz kategorię do edycji.")
+            return
+
+        category_name = self.category_table.item(selected_item, "values")[0]
+        self.clear_dynamic_frame()
+
+        tk.Label(self.dynamic_frame, text="Edytuj Kategorię", font=("Arial", 18)).pack(pady=10)
+        category_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        category_entry.insert(0, category_name)
+        category_entry.pack(pady=5)
+
+        def submit():
+            new_name = category_entry.get().strip()
+            if new_name and new_name not in self.categories:
+                index = self.categories.index(category_name)
+                self.categories[index] = new_name
+                self.category_table.item(selected_item, values=(new_name,))
+                self.display_message("Sukces", "Zaktualizowano kategorię.")
+            else:
+                self.display_message("Błąd", "Nieprawidłowa lub już istniejąca kategoria.")
+
+        tk.Button(self.dynamic_frame, text="Zapisz", font=("Arial", 14), bg="blue", fg="white", command=submit).pack(pady=10)
+
+    def show_delete_category_confirmation(self):
+        selected_item = self.category_table.selection()
+        if not selected_item:
+            self.display_message("Błąd", "Wybierz kategorię do usunięcia.")
+            return
+
+        category_name = self.category_table.item(selected_item, "values")[0]
+        self.clear_dynamic_frame()
+
+        tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć kategorię '{category_name}'?", font=("Arial", 14), fg="red").pack(pady=10)
+
+        def confirm():
+            self.categories.remove(category_name)
+            self.category_table.delete(selected_item)
+            self.display_message("Sukces", "Kategoria została usunięta.")
+
+        tk.Button(self.dynamic_frame, text="Tak", font=("Arial", 14), bg="green", fg="white", command=confirm).pack(padx=10, pady=10)
+        tk.Button(self.dynamic_frame, text="Nie", font=("Arial", 14), bg="red", fg="white", command=self.clear_dynamic_frame).pack(padx=10, pady=10)
+
+    def show_add_meal_form(self):
+        self.clear_dynamic_frame()
+        tk.Label(self.dynamic_frame, text="Dodaj Posiłek", font=("Arial", 18)).pack(pady=10)
+        meal_name_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        meal_name_entry.pack(pady=5)
+        tk.Label(self.dynamic_frame, text="Cena (PLN)", font=("Arial", 14)).pack(pady=5)
+        meal_price_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        meal_price_entry.pack(pady=5)
+        tk.Label(self.dynamic_frame, text="Kategoria", font=("Arial", 14)).pack(pady=5)
+        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=self.categories, font=("Arial", 14))
+        meal_category_combo.pack(pady=5)
+
+        def submit():
+            name = meal_name_entry.get().strip()
+            price = meal_price_entry.get().strip()
+            category = meal_category_combo.get().strip()
+            if not name or not price or not category:
+                self.display_message("Błąd", "Wszystkie pola są wymagane.")
+                return
+            try:
+                price = float(price)
+            except ValueError:
+                self.display_message("Błąd", "Cena musi być liczbą.")
+                return
+            meal = {"name": name, "price": price, "category": category}
+            self.meals.append(meal)
+            self.meal_table.insert("", "end", values=(name, f"{price} PLN", category))
+            self.display_message("Sukces", "Dodano posiłek.")
+
+        tk.Button(self.dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+
+    def show_edit_meal_form(self):
+        selected_item = self.meal_table.selection()
+        if not selected_item:
+            self.display_message("Błąd", "Wybierz posiłek do edycji.")
+            return
+
+        meal_name, meal_price, meal_category = self.meal_table.item(selected_item, "values")
+        self.clear_dynamic_frame()
+
+        tk.Label(self.dynamic_frame, text="Edytuj Posiłek", font=("Arial", 18)).pack(pady=10)
+        meal_name_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        meal_name_entry.insert(0, meal_name)
+        meal_name_entry.pack(pady=5)
+        tk.Label(self.dynamic_frame, text="Cena (PLN)", font=("Arial", 14)).pack(pady=5)
+        meal_price_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        meal_price_entry.insert(0, meal_price.replace(" PLN", ""))
+        meal_price_entry.pack(pady=5)
+        tk.Label(self.dynamic_frame, text="Kategoria", font=("Arial", 14)).pack(pady=5)
+        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=self.categories, font=("Arial", 14))
+        meal_category_combo.set(meal_category)
+        meal_category_combo.pack(pady=5)
+
+        def submit():
+            new_name = meal_name_entry.get().strip()
+            new_price = meal_price_entry.get().strip()
+            new_category = meal_category_combo.get().strip()
+            if not new_name or not new_price or not new_category:
+                self.display_message("Błąd", "Wszystkie pola są wymagane.")
+                return
+            try:
+                new_price = float(new_price)
+            except ValueError:
+                self.display_message("Błąd", "Cena musi być liczbą.")
+                return
+            for meal in self.meals:
+                if meal["name"] == meal_name:
+                    meal["name"] = new_name
+                    meal["price"] = new_price
+                    meal["category"] = new_category
+                    break
+            self.meal_table.item(selected_item, values=(new_name, f"{new_price} PLN", new_category))
+            self.display_message("Sukces", "Zaktualizowano posiłek.")
+
+        tk.Button(self.dynamic_frame, text="Zapisz", font=("Arial", 14), bg="blue", fg="white", command=submit).pack(pady=10)
+
+    def show_delete_meal_confirmation(self):
+        selected_item = self.meal_table.selection()
+        if not selected_item:
+            self.display_message("Błąd", "Wybierz posiłek do usunięcia.")
+            return
+
+        meal_name = self.meal_table.item(selected_item, "values")[0]
+        self.clear_dynamic_frame()
+
+        tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć posiłek '{meal_name}'?", font=("Arial", 14), fg="red").pack(pady=10)
+
+        def confirm():
+            self.meals = [meal for meal in self.meals if meal["name"] != meal_name]
+            self.meal_table.delete(selected_item)
+            self.display_message("Sukces", "Posiłek został usunięty.")
+
+        tk.Button(self.dynamic_frame, text="Tak", font=("Arial", 14), bg="green", fg="white", command=confirm).pack(padx=10, pady=10)
+        tk.Button(self.dynamic_frame, text="Nie", font=("Arial", 14), bg="red", fg="white", command=self.clear_dynamic_frame).pack(padx=10, pady=10)
+
+    def display_message(self, title, message):
+        self.clear_dynamic_frame()
+        tk.Label(self.dynamic_frame, text=title, font=("Arial", 18), fg="blue").pack(pady=5)
+        tk.Label(self.dynamic_frame, text=message, font=("Arial", 14)).pack(pady=5)
+
+    def clear_dynamic_frame(self):
+        for widget in self.dynamic_frame.winfo_children():
+            widget.destroy()
+

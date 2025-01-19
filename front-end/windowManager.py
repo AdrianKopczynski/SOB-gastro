@@ -6,6 +6,7 @@ from tabletopEditor import TabletopEditor
 from orderEditor import OrderEditor
 from adminPanel import AdminPanel
 from requestHandler import RequestHandler 
+from orderSummary import OrderSummary
 
 
 class WindowManager:
@@ -112,6 +113,14 @@ class WindowManager:
             self.logout_button.grid()
             self.exit_button.grid_remove()
             self.update_admin_button(True)
+        
+        elif frame_name == "OrderSummary":
+            order = kwargs.get("order", None)
+            table_name = kwargs.get("table_name", "")
+            self.current_frame = OrderSummary(self.root, self, order=order, table_name=table_name)
+            self.logout_button.grid()
+            self.exit_button.grid_remove()
+
 
         
         self.update_greeting()
