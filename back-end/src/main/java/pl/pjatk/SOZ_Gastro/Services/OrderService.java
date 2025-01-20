@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderMealRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderRepository;
 
@@ -20,9 +21,9 @@ public class OrderService {
     }
 
     ///Tablica mealID reprezentuje pozycje w zamówieniu
-    public Order addNewOrder(Long[] mealID, Tabletop tabletop)
+    public Order addNewOrder(Long[] mealID, Tabletop tabletop, User user)
     {
-        Order order = new Order(mealID, tabletop, orderMealRepository);
+        Order order = new Order(mealID, tabletop, orderMealRepository, user);
         return orderRepository.save(order);
     }
 
