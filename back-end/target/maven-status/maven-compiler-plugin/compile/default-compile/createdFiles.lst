@@ -9,14 +9,16 @@ pl\pjatk\SOZ_Gastro\Enums\UserType.class
 pl\pjatk\SOZ_Gastro\ObjectClasses\OrderMeal.class
 pl\pjatk\SOZ_Gastro\Services\OrderService.class
 pl\pjatk\SOZ_Gastro\ObjectClasses\Meal.class
+pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\UpdateOrderRequest.class
 pl\pjatk\SOZ_Gastro\ObjectClasses\User.class
 pl\pjatk\SOZ_Gastro\Config\RestTemplateConfig.class
+pl\pjatk\SOZ_Gastro\Controller\OrderControllerAdvice.class
 pl\pjatk\SOZ_Gastro\ObjectClasses\InputStringMysqlValidator.class
 pl\pjatk\SOZ_Gastro\Repositories\UserRepository.class
 pl\pjatk\SOZ_Gastro\Services\ManagementService.class
 pl\pjatk\SOZ_Gastro\Exceptions\BadRequestException.class
-pl\pjatk\SOZ_Gastro\ObjectClasses\CreateOrderRequest.class
 pl\pjatk\SOZ_Gastro\ObjectClasses\Order.class
+pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\CreateOrderRequest.class
 pl\pjatk\SOZ_Gastro\Controller\OrderController.class
 pl\pjatk\SOZ_Gastro\Services\UserService.class
 pl\pjatk\SOZ_Gastro\Controller\UserController.class

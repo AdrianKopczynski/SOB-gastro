@@ -6,6 +6,7 @@ import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.CreateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.UpdateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.OrderService;
 
 @RestController
@@ -20,7 +21,7 @@ public class OrderController
     @PostMapping("/createOrder")
     public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest)
     {
-        return ResponseEntity.ok(orderService.addNewOrder(createOrderRequest.getMealID(), createOrderRequest.getTabletop()));
+        return ResponseEntity.ok(orderService.addNewOrder(createOrderRequest.getMealID(), createOrderRequest.getTabletop(), createOrderRequest.getUser()));
     }
 
     @GetMapping("/getOrder/{id}")
