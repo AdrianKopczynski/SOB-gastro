@@ -130,15 +130,8 @@ public class ManagementService {
                 orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
     }
 
-//    public Tabletop toggleAvailableTabletopById (long id){
-//        Tabletop tmp = tabletopRepository.findById(id)
-//                .orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
-//        tmp.setAvailable(!tmp.isAvailable());
-//        return tabletopRepository.save(tmp);
-//    }
 
     public List<Tabletop> getTabletopList(){return tabletopRepository.findAllByIdIsNotNull();}
 
-    public List<Tabletop> getAvailableTabletopList(){return tabletopRepository.findAllByIdIsNotNullAndIsAvailableTrue();}
 
 }

@@ -8,6 +8,5 @@ import java.util.List;
 
 public interface TabletopRepository extends JpaRepository<Tabletop, Long> {
     List<Tabletop> findAllByIdIsNotNull();
-    List<Tabletop> findAllByIdIsNotNullAndIsAvailableTrue();
 
 }

@@ -9,15 +9,10 @@ public class Tabletop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
     private String color;
-
     private float x;
-
     private float y;
-
     private int size;
 
     public Tabletop(Long id, String name, String color, float x, float y, int size) {
