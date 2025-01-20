@@ -12,13 +12,22 @@ public class Tabletop {
 
     private String name;
 
-    private boolean isAvailable;
+    private String color;
 
-    public Tabletop(Long id, String name, boolean isAvailable) {
+    private float x;
+
+    private float y;
+
+    private int size;
+
+    public Tabletop(Long id, String name, String color, float x, float y, int size) {
         validateNameOrThrowError(name);
         this.id = id;
         this.name = name;
-        this.isAvailable=isAvailable;
+        this.color = color;
+        this.x = x;
+        this.y = y;
+        this.size = size;
     }
 
     public Tabletop() {
@@ -48,11 +57,36 @@ public class Tabletop {
         }
     }
 
-    public boolean isAvailable() {
-        return isAvailable;
+    public String getColor() {
+        return color;
     }
 
-    public void setAvailable(boolean available) {
-        isAvailable = available;
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
+
+    public int getSize() {
+        return size;
+
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
