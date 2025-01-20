@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import json
-import os
+from urllib.error import HTTPError
 from requestHandler import RequestHandler as rh
 
 try:
@@ -94,5 +94,6 @@ class LoginScreen(tk.Frame):
                 return user['username'],user['userType']
             return None
         except Exception as e:
-            messagebox.showerror("Error", f"{e}")
+            return None
+        except HTTPError:
             return None
