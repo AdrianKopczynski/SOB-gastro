@@ -9,6 +9,8 @@ import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.OrderService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/order")
 public class OrderController
@@ -28,6 +30,12 @@ public class OrderController
     public ResponseEntity<Order> getOrderFromID(@PathVariable("id")int id)
     {
         return ResponseEntity.ok(orderService.findByID(id));
+    }
+
+    @GetMapping("/getOrder")
+    public ResponseEntity<List<Order>> getOrders()
+    {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
     @PostMapping("/closeOrder/{id}")

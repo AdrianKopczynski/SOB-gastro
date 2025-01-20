@@ -50,7 +50,7 @@ public class UserService
             throw new IllegalArgumentException("Username cannot be null or empty");
         }
 
-        return this.userRepository.findByUsername(username).orElseThrow(() ->
+        return userRepository.findByUsername(username).orElseThrow(() ->
                 new UserNotFoundException("User with username " + username + " not found"));
     }
 
@@ -60,7 +60,7 @@ public class UserService
         {
             throw new IllegalArgumentException("Login pin cannot be null");
         }
-        return this.userRepository.findByLoginPin(loginPin).orElseThrow(() ->
+        return userRepository.findByLoginPin(loginPin).orElseThrow(() ->
                 new UserNotFoundException("user with given login pin does net exist"));
 
     }
@@ -71,7 +71,7 @@ public class UserService
         {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        return this.userRepository.findById(id)
+        return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
@@ -82,10 +82,10 @@ public class UserService
             throw new IllegalArgumentException("Id cannot be null");
         }
         getById(id);
-        this.userRepository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
-    public List<User>  getAll(){return this.userRepository.findAll();}
+    public List<User>  getAll(){return userRepository.findAllByIdIsNotNull();}
 
     public void deleteUserByUsername(String username) throws UserNotFoundException
     {
@@ -96,7 +96,7 @@ public class UserService
 
         getByUsername(username);
 
-        this.userRepository.deleteByUsername(username);
+        userRepository.deleteByUsername(username);
     }
 
     public User updateUsername(String username, String newUsername) throws UserNotFoundException
