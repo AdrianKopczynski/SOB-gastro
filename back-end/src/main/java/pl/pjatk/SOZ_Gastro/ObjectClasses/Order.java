@@ -21,6 +21,10 @@ public class Order {
     @JoinColumn(name="tabletop_id", nullable = false)
     private Tabletop tabletop;
 
+    @ManyToOne
+    @JoinColumn(name ="meal_id", nullable = false)
+    private OrderMeal[] orderMeals;
+
 
     public Order()
     {
@@ -46,6 +50,7 @@ public class Order {
         {
             System.out.println(this.id);
             OrderMeal orderMeal = new OrderMeal(e,this.id,"");
+            this.orderMeals[Math.toIntExact(e)] = orderMeal;
             orderMealRepository.save(orderMeal);
         }
     }
