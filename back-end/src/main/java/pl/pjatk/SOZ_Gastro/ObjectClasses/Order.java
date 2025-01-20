@@ -12,7 +12,9 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;             //ID usera, który stworzył zamówienie
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;             //ID usera, który stworzył zamówienie
     private Instant createdAt;      //timestamp stworzenia zamówienia
     private Instant closedAt;       //timestamp zamknięcia zamówienia
                                     //Jeśli closedAt = Null; to zamówienie jest otwarte
@@ -35,11 +37,12 @@ public class Order {
         closedAt = null;
     }
 
-    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository)
+    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, User user)
     {
         createdAt = Instant.now();
         closedAt = null;
         this.tabletop = tabletop;
+        this.user = user;
         System.out.println(mealID.length);
 
         for (Long e : mealID)

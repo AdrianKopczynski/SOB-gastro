@@ -18,6 +18,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserType userType = UserType.Cashier;
 
+
     public User(Long id, String username, String loginPin, UserType userType, boolean enabled)
     {
         this.id = id;

@@ -37,23 +37,23 @@ public class ManagementServiceTest {
     @InjectMocks
     private ManagementService managementService;
 
-    @Test
-    public void testGetAvailableTabletopList(){
-        Tabletop tabletopF = new Tabletop(1L,"nameF",false);
-        Tabletop tabletopT = new Tabletop(2L,"nameT",true);
-        when(tabletopRepository.findAllByIdIsNotNullAndIsAvailableTrue())
-                .thenReturn(Arrays.asList(tabletopT));
-
-        List<Tabletop> result = managementService.getAvailableTabletopList();
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals(tabletopT.getName(),result.get(0).getName());
-    }
+//    @Test
+//    public void testGetAvailableTabletopList(){
+//        Tabletop tabletopF = new Tabletop(1L,"nameF",false);
+//        Tabletop tabletopT = new Tabletop(2L,"nameT",true);
+//        when(tabletopRepository.findAllByIdIsNotNullAndIsAvailableTrue())
+//                .thenReturn(Arrays.asList(tabletopT));
+//
+//        List<Tabletop> result = managementService.getAvailableTabletopList();
+//
+//        assertNotNull(result);
+//        assertEquals(1, result.size());
+//        assertEquals(tabletopT.getName(),result.get(0).getName());
+//    }
     @Test
     public void testGetTabletopList(){
-        Tabletop tabletopF = new Tabletop(1L,"nameF",false);
-        Tabletop tabletopT = new Tabletop(2L,"nameT",true);
+        Tabletop tabletopF = new Tabletop(1L, "nameF", "colorF", 5, 6, 1);
+        Tabletop tabletopT = new Tabletop(2L,"nameT","colorT", 7, 4, 2);
         when(tabletopRepository.findAllByIdIsNotNull())
                 .thenReturn(Arrays.asList(tabletopF,tabletopT));
 

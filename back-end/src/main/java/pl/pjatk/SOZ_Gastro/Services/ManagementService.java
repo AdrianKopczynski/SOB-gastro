@@ -46,6 +46,18 @@ public class ManagementService {
         return categoryRepository.save(tmp);
     }
 
+    public boolean deleteCategory (long id){
+        if (!categoryRepository.existsById(id)) throw new NoSuchElementException("no category with id: " + id);
+        Category tmp = categoryRepository.findById(id).orElseThrow();
+        List<Meal> meals = mealRepository.findAllByCategoryName(tmp.getName());
+        meals.forEach(meal -> meal.setCategory(getCategory(1L)));
+        categoryRepository.deleteById(id);
+        return true;
+    }
+
+    public Category getCategory (long id){
+        return categoryRepository.findById(id).orElseThrow();
+    }
 
     public List<Category> getCategoryList(){
         return categoryRepository.findAllByIdIsNotNull();
@@ -101,7 +113,10 @@ public class ManagementService {
         Tabletop tmp = tabletopRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
         tmp.setName(tabletop.getName());
-        tmp.setAvailable(tabletop.isAvailable());
+        tmp.setColor(tabletop.getColor());
+        tmp.setX(tabletop.getX());
+        tmp.setY(tabletop.getY());
+        tmp.setSize(tabletop.getSize());
         return tabletopRepository.save(tmp);
     }
 
@@ -115,12 +130,12 @@ public class ManagementService {
                 orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
     }
 
-    public Tabletop toggleAvailableTabletopById (long id){
-        Tabletop tmp = tabletopRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
-        tmp.setAvailable(!tmp.isAvailable());
-        return tabletopRepository.save(tmp);
-    }
+//    public Tabletop toggleAvailableTabletopById (long id){
+//        Tabletop tmp = tabletopRepository.findById(id)
+//                .orElseThrow(() -> new NoSuchElementException("no tableTop with id: " + id));
+//        tmp.setAvailable(!tmp.isAvailable());
+//        return tabletopRepository.save(tmp);
+//    }
 
     public List<Tabletop> getTabletopList(){return tabletopRepository.findAllByIdIsNotNull();}
 

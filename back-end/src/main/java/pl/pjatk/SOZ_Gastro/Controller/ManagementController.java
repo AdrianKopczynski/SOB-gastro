@@ -23,6 +23,10 @@ public class ManagementController {
     public ResponseEntity<Category> addCategory(@RequestBody Category category){
         return ResponseEntity.ok(managementService.addCategory(category));
     }
+    @DeleteMapping("/deleteCategory/{id}")
+    public ResponseEntity<Boolean> deleteCategory(@PathVariable long id){
+        return ResponseEntity.ok(managementService.deleteCategory(id));
+    }
 
     @PutMapping("/updateCategory/{id}")
     public ResponseEntity<Category> updateCategory(@RequestBody Category category, @PathVariable long id){
@@ -72,10 +76,11 @@ public class ManagementController {
     public ResponseEntity<Tabletop> updateTabletop(@RequestBody Tabletop tabletop, @PathVariable long id){
         return ResponseEntity.ok(managementService.updateTabletop(tabletop,id));
     }
-    @PutMapping("/toggleAvailableTabletopById/{id}")
-    public ResponseEntity<Tabletop> toggleAvailableTabletopById(@PathVariable long id){
-        return ResponseEntity.ok(managementService.toggleAvailableTabletopById(id));
-    }
+//    @PutMapping("/toggleAvailableTabletopById/{id}")
+//    public ResponseEntity<Tabletop> toggleAvailableTabletopById(@PathVariable long id){
+//        return ResponseEntity.ok(managementService.toggleAvailableTabletopById(id));
+//    }
+
 
     @GetMapping("/getTabletopList")
     public ResponseEntity<List<Tabletop>> getTabletopList() {return ResponseEntity.ok(managementService.getTabletopList());}
