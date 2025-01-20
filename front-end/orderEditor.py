@@ -3,6 +3,15 @@ from tkinter import ttk, messagebox
 import json
 import os
 from datetime import datetime
+from requestHandler import RequestHandler as rh
+from urllib.error import HTTPError
+
+try:
+    with open('config.json', "r", encoding="utf-8") as file:
+        config = json.load(file)
+        db = rh(config[0]['connection_addr'])
+except FileNotFoundError:
+    print("Cannot get connection adress!")
 
 
 class OrderEditor(tk.Frame):
@@ -23,7 +32,7 @@ class OrderEditor(tk.Frame):
         # meals = self.manager.request_handler.get_meals()
         # return meals if meals else []
 
-        MEALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "meals.json")
+        """MEALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "meals.json")
         if os.path.exists(MEALS_FILE):
             with open(MEALS_FILE, "r", encoding="utf-8") as file:
                 meals = json.load(file)
@@ -31,7 +40,18 @@ class OrderEditor(tk.Frame):
                 return meals
         else:
             messagebox.showerror("Błąd", "Plik meals.json nie istnieje!")
-            return []
+            return []"""
+        
+        try:
+            data = rh.get_orders_by_table(db,id)
+            self.meal_table.delete(*self.meal_table.get_children())
+            for entry in data:
+                self.meal_table.insert(
+                    "", "end", values=(entry['name'], entry['price'], entry['category']["name"],)
+                )
+        except TypeError as err:
+            print(f"Error while loading meals, error message: {err}")
+            self.meal_table = []
 
     def create_widgets(self):
         self.grid_rowconfigure(0, weight=0)  
@@ -142,6 +162,7 @@ class OrderEditor(tk.Frame):
             row_id = self.meal_table.insert("", "end", values=(meal["name"], f"{meal['price']} PLN"))
             self.meal_table.item(row_id, tags=row_id)
             self.meal_table.tag_bind(row_id, "<Button-1>", lambda event, meal_id=meal["meal_id"]: self.add_meal_to_order(meal_id))
+        
 
     def add_meal_to_order(self, meal_id):
         meal = next((m for m in self.meals if m["meal_id"] == meal_id), None)

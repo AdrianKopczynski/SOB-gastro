@@ -1,6 +1,5 @@
 import requests
-import json
-import os
+from urllib.error import HTTPError
 
 class RequestHandler:
     def __init__(self, base_url):
@@ -21,6 +20,7 @@ class RequestHandler:
             return response.json()
         except requests.exceptions.HTTPError as http_e:
             print(f"HTTP error occurred: {http_e}")
+            raise HTTPError(url='http://localhost:10000/management/addCategory', code='400',msg="Error",hdrs="",fp="")
         except Exception as e:
             print(f"Other error occurred: {e}")
         return None
@@ -40,6 +40,20 @@ class RequestHandler:
             return response.json()
         except requests.exceptions.HTTPError as http_e:
             print(f"HTTP error occurred: {http_e}")
+            raise HTTPError(url='http://localhost:10000/management/addCategory', code='400',msg="Error",hdrs="",fp="")
+        except Exception as e:
+            print(f"Other error occurred: {e}")
+        return None
+    
+    def send_put_request(self, endpoint, data, headers=None):
+        try:
+            url = f"{self.base_url}/{endpoint}"
+            response = requests.put(url, json=data, headers=headers)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as http_e:
+            print(f"HTTP error occurred: {http_e}")
+            raise HTTPError(url='http://localhost:10000/management/addCategory', code='400',msg="Error",hdrs="",fp="")
         except Exception as e:
             print(f"Other error occurred: {e}")
         return None
@@ -59,6 +73,7 @@ class RequestHandler:
             return response.json() if response.content else {'message': 'Deleted successfully'}
         except requests.exceptions.HTTPError as http_e:
             print(f"HTTP error occurred: {http_e}")
+            raise HTTPError(url='http://localhost:10000/management/addCategory', code='400',msg="Error",hdrs="",fp="")
         except Exception as e:
             print(f"Other error occurred: {e}")
         return None
@@ -108,16 +123,28 @@ class RequestHandler:
     def create_category(self, name):
         return self.send_post_request("management/addCategory", name)
 
-    def get_category(self):
+    def get_categories_list(self):
         return self.send_get_request("management/getCategoryList")
+    
+    def update_category(self,id,category):
+        return self.send_put_request(f"management/updateCategory/{id}",category)
 
     def add_meal(self,meal):
         return self.send_post_request("management/addMeal", meal)
+    
+    def update_meal(self,id,meal):
+        return self.send_put_request(f"management/updateMeal/{id}",meal)
 
     def add_tabletop(self):
         return self.send_post_request("management/addTabletop")
 
-    def get_meals(self):
+    def get_all_meals(self):
         return self.send_get_request("management/getMealList")
+    
+    def delete_meal(self,id):
+        return self.send_delete_request(f"management/deleteMeal/{id}")
+
+    
+    
 
 
