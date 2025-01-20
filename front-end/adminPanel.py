@@ -3,6 +3,7 @@ from tkinter import ttk, messagebox, simpledialog
 from requestHandler import RequestHandler as rh
 import json
 import os
+from urllib.error import HTTPError
 
 base_dir = os.path.dirname(os.path.abspath(__file__)) #poki operujemy na plikach to dodaje bo jesli uzywas vscode a pycharma to inaczej pliki moze struturyzowac
 file_path = os.path.join(base_dir, 'users2.json')
@@ -19,8 +20,8 @@ class AdminPanel(tk.Frame):
         super().__init__(master)
         self.manager = manager
         self.request_handler = request_handler
-        self.categories = []  # Dodane na testy
-        self.meals = [] # Dodane na testy
+        self.categories = []
+        self.meals = []
 
         self.grid_rowconfigure(0, weight=0)
         self.grid_rowconfigure(1, weight=1) 
@@ -90,7 +91,7 @@ class AdminPanel(tk.Frame):
         buttons_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
         actions = [
-            ("Dodaj użytkownika", lambda: self.show_add_user_form(frame)),
+            ("Dodaj użytkownika", self.show_add_user_form),
             ("Edytuj użytkownika", self.show_edit_user_form),
             ("Usuń użytkownika", self.delete_user),
         ]
@@ -141,10 +142,34 @@ class AdminPanel(tk.Frame):
             self.users_listbox.insert(
                 "", "end", values=(user['id'], user['username'], user['userType'], "Tak" if user['enabled'] else "Nie")
             )
+    
+    def load_meals(self):
+        try:
+            data = rh.get_all_meals(db)
+            self.meal_table.delete(*self.meal_table.get_children())
+            for entry in data:
+                self.meal_table.insert(
+                    "", "end", values=(entry['name'], entry['price'], entry['category']["name"],)
+                )
+        except TypeError as err:
+            print(f"Error while loading meals, error message: {err}")
+            self.meal_table = []
 
-    def show_add_user_form(self, parent_frame):
-        for widget in self.dynamic_frame.winfo_children():
-            widget.destroy()
+    def load_categories(self):
+        try:
+            data = rh.get_categories_list(db)
+            self.category_table.delete(*self.category_table.get_children())
+            for entry in data:
+                self.category_table.insert(
+                    "", "end", values=(entry['name'],)
+                )
+        except TypeError as err:
+            print(f"Error while loading categories, error message: {err}")
+            self.category_table = []
+
+    def show_add_user_form(self):
+        """for widget in self.dynamic_frame.winfo_children():
+            widget.destroy()"""
 
         tk.Label(self.dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
 
@@ -244,7 +269,7 @@ class AdminPanel(tk.Frame):
             self.after(3000, lambda: warning_label.destroy())
 
             
-    def show_edit_user_form(self):  #testowałem na pliku czy działa
+    def show_edit_user_form(self):
         selected_item = self.users_listbox.selection()
         if not selected_item:
             messagebox.showwarning("Brak wyboru", "Proszę wybrać użytkownika do edycji.")
@@ -335,7 +360,7 @@ class AdminPanel(tk.Frame):
         lists_frame.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
 
         tk.Label(lists_frame, text="Kategorie", font=("Arial", 18)).pack(pady=5)
-        self.category_table = ttk.Treeview(lists_frame, columns=("Nazwa"), show="headings")
+        self.category_table = ttk.Treeview(lists_frame, columns=("Nazwa",), show="headings")
         self.category_table.heading("Nazwa", text="Nazwa")
         self.category_table.column("Nazwa", width=200, anchor="w")
         self.category_table.pack(fill="both", expand=True, pady=5)
@@ -353,6 +378,9 @@ class AdminPanel(tk.Frame):
         self.dynamic_frame = tk.Frame(self.category_meal_tab, bg="white", relief="sunken", bd=2)
         self.dynamic_frame.grid(row=0, column=2, sticky="nsew", padx=10, pady=10)
 
+        self.load_meals()
+        self.load_categories()
+
     def show_add_category_form(self):
         self.clear_dynamic_frame()
         tk.Label(self.dynamic_frame, text="Dodaj Kategorię", font=("Arial", 18)).pack(pady=10)
@@ -362,9 +390,14 @@ class AdminPanel(tk.Frame):
         def submit():
             category = category_entry.get().strip()
             if category and category not in self.categories:
-                self.categories.append(category)
-                self.category_table.insert("", "end", values=(category,))
-                self.display_message("Sukces", "Dodano kategorię.")
+                try:
+                    rh.create_category(db,{"name":f"{category}"})
+                except HTTPError:
+                    self.display_message("Błąd", "Nie udało się dodać kategorii.")
+                else:
+                    self.display_message("Sukces", "Dodano kategorię.")
+                    self.load_categories()
+                
             else:
                 self.display_message("Błąd", "Nieprawidłowa lub już istniejąca kategoria.")
 
@@ -386,11 +419,16 @@ class AdminPanel(tk.Frame):
 
         def submit():
             new_name = category_entry.get().strip()
-            if new_name and new_name not in self.categories:
-                index = self.categories.index(category_name)
-                self.categories[index] = new_name
-                self.category_table.item(selected_item, values=(new_name,))
-                self.display_message("Sukces", "Zaktualizowano kategorię.")
+            if new_name not in [entry["name"] for entry in rh.get_categories_list(db)]:
+                id = [entry["id"] for entry in rh.get_categories_list(db) if entry["name"] == category_name]
+                try:
+                    rh.update_category(db,id[0],{'name':f'{new_name}'})
+                except HTTPError:
+                    self.display_message("Błąd", "Nieprawidłowa lub już istniejąca kategoria.")
+                else:
+                    self.display_message("Sukces", "Zaktualizowano kategorię.")
+                    self.load_categories()
+                    self.load_meals()
             else:
                 self.display_message("Błąd", "Nieprawidłowa lub już istniejąca kategoria.")
 
@@ -424,7 +462,7 @@ class AdminPanel(tk.Frame):
         meal_price_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
         meal_price_entry.pack(pady=5)
         tk.Label(self.dynamic_frame, text="Kategoria", font=("Arial", 14)).pack(pady=5)
-        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=self.categories, font=("Arial", 14))
+        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=[entry["name"] for entry in rh.get_categories_list(db)], font=("Arial", 14))
         meal_category_combo.pack(pady=5)
 
         def submit():
@@ -439,10 +477,16 @@ class AdminPanel(tk.Frame):
             except ValueError:
                 self.display_message("Błąd", "Cena musi być liczbą.")
                 return
-            meal = {"name": name, "price": price, "category": category}
-            self.meals.append(meal)
-            self.meal_table.insert("", "end", values=(name, f"{price} PLN", category))
-            self.display_message("Sukces", "Dodano posiłek.")
+            category_object = [entry for entry in rh.get_categories_list(db) if entry["name"] == category]
+            meal = {"name": name, "category": category_object[0], "price": price}
+            try:
+                rh.add_meal(db,meal)
+            except HTTPError:
+                self.display_message("Błąd", "Nie udało się dodać posiłku")
+            else:
+                self.display_message("Sukces", "Dodano posiłek.")
+                self.load_meals()
+            
 
         tk.Button(self.dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
 
@@ -468,6 +512,8 @@ class AdminPanel(tk.Frame):
         meal_category_combo.set(meal_category)
         meal_category_combo.pack(pady=5)
 
+        id = [entry["id"] for entry in rh.get_all_meals(db) if entry["name"] == meal_name]
+
         def submit():
             new_name = meal_name_entry.get().strip()
             new_price = meal_price_entry.get().strip()
@@ -475,19 +521,16 @@ class AdminPanel(tk.Frame):
             if not new_name or not new_price or not new_category:
                 self.display_message("Błąd", "Wszystkie pola są wymagane.")
                 return
+            category_object = [entry for entry in rh.get_categories_list(db) if entry["name"] == new_category]
+            meal = {"name": new_name, "category": category_object[0], "price": new_price}
             try:
-                new_price = float(new_price)
-            except ValueError:
-                self.display_message("Błąd", "Cena musi być liczbą.")
-                return
-            for meal in self.meals:
-                if meal["name"] == meal_name:
-                    meal["name"] = new_name
-                    meal["price"] = new_price
-                    meal["category"] = new_category
-                    break
-            self.meal_table.item(selected_item, values=(new_name, f"{new_price} PLN", new_category))
-            self.display_message("Sukces", "Zaktualizowano posiłek.")
+                rh.update_meal(db,id[0],meal)
+            except HTTPError:
+                self.display_message("Błąd", "Nie udało się zaktualizować posiłku")
+            else:
+                self.display_message("Sukces", "Zaktualizowano posiłek.")
+                self.load_meals()
+            
 
         tk.Button(self.dynamic_frame, text="Zapisz", font=("Arial", 14), bg="blue", fg="white", command=submit).pack(pady=10)
 
@@ -499,13 +542,17 @@ class AdminPanel(tk.Frame):
 
         meal_name = self.meal_table.item(selected_item, "values")[0]
         self.clear_dynamic_frame()
-
+        id = [entry["id"] for entry in rh.get_all_meals(db) if entry["name"] == meal_name]
         tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć posiłek '{meal_name}'?", font=("Arial", 14), fg="red").pack(pady=10)
 
         def confirm():
-            self.meals = [meal for meal in self.meals if meal["name"] != meal_name]
-            self.meal_table.delete(selected_item)
-            self.display_message("Sukces", "Posiłek został usunięty.")
+            try:
+                rh.delete_meal(db,id[0])
+            except HTTPError:
+                self.display_message("Błąd", "Nie udało się usunać posiłku.")
+            else:
+                self.display_message("Sukces", "Posiłek został usunięty.")
+                self.load_meals()
 
         tk.Button(self.dynamic_frame, text="Tak", font=("Arial", 14), bg="green", fg="white", command=confirm).pack(padx=10, pady=10)
         tk.Button(self.dynamic_frame, text="Nie", font=("Arial", 14), bg="red", fg="white", command=self.clear_dynamic_frame).pack(padx=10, pady=10)
