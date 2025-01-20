@@ -76,17 +76,10 @@ public class ManagementController {
     public ResponseEntity<Tabletop> updateTabletop(@RequestBody Tabletop tabletop, @PathVariable long id){
         return ResponseEntity.ok(managementService.updateTabletop(tabletop,id));
     }
-//    @PutMapping("/toggleAvailableTabletopById/{id}")
-//    public ResponseEntity<Tabletop> toggleAvailableTabletopById(@PathVariable long id){
-//        return ResponseEntity.ok(managementService.toggleAvailableTabletopById(id));
-//    }
-
 
     @GetMapping("/getTabletopList")
     public ResponseEntity<List<Tabletop>> getTabletopList() {return ResponseEntity.ok(managementService.getTabletopList());}
 
-    @GetMapping("/getAvailableTabletopList")
-    public ResponseEntity<List<Tabletop>> getAvailableTabletopList() {return ResponseEntity.ok(managementService.getAvailableTabletopList());}
 
     @GetMapping("/getTabletopById/{id}")
     public ResponseEntity<Tabletop> getTabletopById(@PathVariable("id") Long id)
