@@ -6,7 +6,10 @@ import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.CreateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.UpdateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.OrderService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/order")
@@ -20,13 +23,19 @@ public class OrderController
     @PostMapping("/createOrder")
     public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest)
     {
-        return ResponseEntity.ok(orderService.addNewOrder(createOrderRequest.getMealID(), createOrderRequest.getTabletop()));
+        return ResponseEntity.ok(orderService.addNewOrder(createOrderRequest.getMealID(), createOrderRequest.getTabletop(), createOrderRequest.getUser()));
     }
 
     @GetMapping("/getOrder/{id}")
     public ResponseEntity<Order> getOrderFromID(@PathVariable("id")int id)
     {
         return ResponseEntity.ok(orderService.findByID(id));
+    }
+
+    @GetMapping("/getOrder")
+    public ResponseEntity<List<Order>> getOrders()
+    {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 
     @PostMapping("/closeOrder/{id}")
