@@ -9,6 +9,8 @@ import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderMealRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderRepository;
 
+import java.util.List;
+
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -41,6 +43,11 @@ public class OrderService {
     {
         System.out.println(order);
         //TODO sama funkcjonalnosć drukowania i połączenie z drukarką
+    }
+
+    public List<Order> getAllOrders()
+    {
+        return orderRepository.findAll();
     }
 
     public Order closeOrder(Order order)
