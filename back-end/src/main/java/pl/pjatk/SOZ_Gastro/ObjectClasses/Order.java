@@ -82,4 +82,43 @@ public class Order {
         closedAt = Instant.now();
     }
 
-   }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(Instant closedAt) {
+        this.closedAt = closedAt;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Tabletop getTabletop() {
+        return tabletop;
+    }
+
+    public void setTabletop(Tabletop tabletop) {
+        this.tabletop = tabletop;
+    }
+}
