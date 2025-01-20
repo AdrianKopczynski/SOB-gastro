@@ -54,7 +54,7 @@ public class OrderService {
     public Order closeOrder(Order order)
     {
         order.closeOrder();
-        return order;
+        return orderRepository.save(order);
     }
 
     public Order findByID(int id)
