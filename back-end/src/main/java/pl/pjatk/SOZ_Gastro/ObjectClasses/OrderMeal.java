@@ -33,4 +33,9 @@ public class OrderMeal {
     public Long getOrderId() {
         return orderId;
     }
+
+    public void setMealId(long id)
+    {
+        this.mealId = id;
+    }
 }
