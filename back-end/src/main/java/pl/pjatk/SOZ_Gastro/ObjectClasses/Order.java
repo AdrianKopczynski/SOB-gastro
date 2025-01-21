@@ -2,6 +2,7 @@ package pl.pjatk.SOZ_Gastro.ObjectClasses;
 
 import jakarta.persistence.*;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderMealRepository;
+import pl.pjatk.SOZ_Gastro.Repositories.OrderRepository;
 
 import java.time.Instant;
 
@@ -37,14 +38,14 @@ public class Order {
         closedAt = null;
     }
 
-    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, User user, String comment, String[] comment2)
+    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, OrderRepository orderRepository,User user, String comment, String[] comment2)
     {
         createdAt = Instant.now();
         closedAt = null;
         this.tabletop = tabletop;
         this.user = user;
         this.comment = comment;
-        //System.out.println(mealID.length);
+      orderRepository.save(this);
 
         for (int i = 0; i < mealID.length; i++) {
             OrderMeal orderMeal = new OrderMeal(mealID[i], this.id, comment2[i]);

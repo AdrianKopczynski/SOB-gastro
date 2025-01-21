@@ -26,7 +26,7 @@ public class OrderService {
     ///Tablica mealID reprezentuje pozycje w zamówieniu
     public Order addNewOrder(Long[] mealID, Tabletop tabletop, User user, String comment, String[] comment2)
     {
-        Order order = new Order(mealID, tabletop, orderMealRepository, user, comment, comment2);
+        Order order = new Order(mealID, tabletop, orderMealRepository, orderRepository,user, comment, comment2);
         return orderRepository.save(order);
     }
 
