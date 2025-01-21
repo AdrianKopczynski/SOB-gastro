@@ -30,6 +30,22 @@ public class OrderMeal {
         return mealId;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setMealId(Long mealId) {
+        this.mealId = mealId;
+    }
+
     public Long getOrderId() {
         return orderId;
     }

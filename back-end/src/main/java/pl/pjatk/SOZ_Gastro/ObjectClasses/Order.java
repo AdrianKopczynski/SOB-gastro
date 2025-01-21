@@ -37,30 +37,42 @@ public class Order {
         closedAt = null;
     }
 
-    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, User user)
+    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, User user, String comment, String[] comment2)
     {
         createdAt = Instant.now();
         closedAt = null;
         this.tabletop = tabletop;
         this.user = user;
-        System.out.println(mealID.length);
+        this.comment = comment;
+        //System.out.println(mealID.length);
 
-        for (Long e : mealID)
-        {
-            System.out.println(this.id);
-            OrderMeal orderMeal = new OrderMeal(e,this.id,"");
+        for (int i = 0; i < mealID.length; i++) {
+            OrderMeal orderMeal = new OrderMeal(mealID[i], this.id, comment2[i]);
             orderMealRepository.save(orderMeal);
         }
+
+//        for (Long e : mealID)
+//        {
+//            System.out.println(this.id);
+//            OrderMeal orderMeal = new OrderMeal(e,this.id,comment2[e]);
+//            orderMealRepository.save(orderMeal);
+//        }
     }
 
-    public Order updateOrder(Long[] mealID, OrderMealRepository orderMealRepository)
+    public Order updateOrder(Long[] mealID, OrderMealRepository orderMealRepository, String[] comment)
     {
-        for (Long e : mealID)
-        {
-            System.out.println(this.id);
-            OrderMeal orderMeal = new OrderMeal(e,this.id,"");
+
+        for (int i = 0; i < mealID.length; i++) {
+            OrderMeal orderMeal = new OrderMeal(mealID[i], this.id, comment[i]);
             orderMealRepository.save(orderMeal);
         }
+
+//        for (Long e : mealID)
+//        {
+//            System.out.println(this.id);
+//            OrderMeal orderMeal = new OrderMeal(e,this.id,comment);
+//            orderMealRepository.save(orderMeal);
+//        }
         return this;
     }
 
@@ -82,4 +94,43 @@ public class Order {
         closedAt = Instant.now();
     }
 
-   }
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Tabletop getTabletop() {
+        return tabletop;
+    }
+
+    public void setTabletop(Tabletop tabletop) {
+        this.tabletop = tabletop;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Instant getClosedAt() {
+        return closedAt;
+    }
+
+    public void setClosedAt(Instant closedAt) {
+        this.closedAt = closedAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+}
