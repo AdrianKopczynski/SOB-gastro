@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.OrderMeal;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderMealRepository;
@@ -23,20 +24,20 @@ public class OrderService {
     }
 
     ///Tablica mealID reprezentuje pozycje w zamówieniu
-    public Order addNewOrder(Long[] mealID, Tabletop tabletop, User user)
+    public Order addNewOrder(Long[] mealID, Tabletop tabletop, User user, String comment, String[] comment2)
     {
-        Order order = new Order(mealID, tabletop, orderMealRepository, user);
+        Order order = new Order(mealID, tabletop, orderMealRepository, user, comment, comment2);
         return orderRepository.save(order);
     }
 
-    public Order updateOrder(Long[] mealID, Order order)
+    public Order updateOrder(Long[] mealID, String[] comment, Order order)
     {
         if(order.isClosed())
         {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "cannot update closed order with id " + order.getId());
         }
-        order.updateOrder(mealID, orderMealRepository);
+        order.updateOrder(mealID, orderMealRepository, comment);
         return orderRepository.save(order);
     }
 
@@ -62,5 +63,10 @@ public class OrderService {
         return orderRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "order with id " + id +" doesnt exist"));
+    }
+
+    public List<OrderMeal> getOrderMealById(Long id)
+    {
+        return orderMealRepository.findAllByOrderId(id);
     }
 }
