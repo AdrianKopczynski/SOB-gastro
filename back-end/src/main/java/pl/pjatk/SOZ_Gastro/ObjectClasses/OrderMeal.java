@@ -20,6 +20,11 @@ public class OrderMeal {
         this.orderId = orderId;
         this.comment = comment;
     }
+    public OrderMeal(Long mealId, Long orderId)
+    {
+        this.mealId = mealId;
+        this.orderId = orderId;
+    }
 
     public OrderMeal(){}
     public Long getId() {

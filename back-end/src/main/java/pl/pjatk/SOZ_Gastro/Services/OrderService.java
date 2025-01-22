@@ -29,6 +29,11 @@ public class OrderService {
         Order order = new Order(mealID, tabletop, orderMealRepository, orderRepository,user, comment, comment2);
         return orderRepository.save(order);
     }
+    public Order addNewOrderNoMealComment(Long[] mealID, Tabletop tabletop, User user, String comment)
+    {
+        Order order = new Order(mealID, tabletop, orderMealRepository, orderRepository,user, comment);
+        return orderRepository.save(order);
+    }
 
     public Order updateOrder(Long[] mealID, String[] comment, Order order)
     {
