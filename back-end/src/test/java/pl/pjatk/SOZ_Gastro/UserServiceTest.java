@@ -4,6 +4,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import pl.pjatk.SOZ_Gastro.Enums.UserType;
 import pl.pjatk.SOZ_Gastro.Exceptions.BadRequestException;
 import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundException;
@@ -31,67 +32,67 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
-//    @Test
-//    public void testGetUserList(){
-//        User user = new User(1L, "nameA", "1222", UserType.Admin, true );
-//        User user1 = new User(2L, "nameB", "12223", UserType.Cashier, false );
-//        when(userRepository.findAllByIdIsNotNull())
-//                .thenReturn(Arrays.asList(user, user1));
-//
-//        List<User> result = userService.getAll();
-//
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
-//        assertEquals(user.getUsername(),result.get(1).getUsername());
-//    }
-//
-//
-//	@Test
-//	public void testGetUserById()
-//	{
-//        User user = new User(1L, "name", "1111", UserType.Admin, true );
-//        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-//
-//        User result = userService.getById(1L);
-//        assertNotNull(result);
-//        assertEquals(Long.valueOf(1L), result.getId());
-//	}
-//
-//    @Test
-//    public void testGetUserByUsername()
-//    {
-//        User user = new User(1L, "name", "1111", UserType.Admin, true );
-//        when(userRepository.findByUsername("name")).thenReturn(Optional.of(user));
-//
-//        User result = userService.getByUsername("name");
-//        assertNotNull(result);
-//        assertEquals("name", result.getUsername());
-//    }
-//
-//    @Test
-//    public void testThrowBadRequestWhenUserWIthGivenUsernameExists()
-//    {
-//        User user = new User(1L, "name", "1111", UserType.Admin, true );
-//        when(userRepository.existsByUsername("name")).thenReturn(true);
-//
-//        BadRequestException thrown = assertThrows(BadRequestException.class,()
-//                        -> userService.createUser(user),
-//                "Expected createUser to throw, but it didn't");
-//
-//        assertTrue(thrown.getMessage().contains("User with username " + user.getUsername() + " already exists."));
-//    }
-//
-//
+    @Test
+    public void testGetUserList(){
+        User user = new User(1L, "nameA", "1222", UserType.Admin, true );
+        User user1 = new User(2L, "nameB", "12223", UserType.Cashier, false );
+        when(userRepository.findAllByIdIsNotNull())
+                .thenReturn(Arrays.asList(user, user1));
+
+        List<User> result = userService.getAll();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(user.getUsername(),result.get(0).getUsername());
+    }
+
+
+	@Test
+	public void testGetUserById()
+	{
+        User user = new User(1L, "name", "1111", UserType.Admin, true );
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        User result = userService.getById(1L);
+        assertNotNull(result);
+        assertEquals(Long.valueOf(1L), result.getId());
+	}
+
+    @Test
+    public void testGetUserByUsername()
+    {
+        User user = new User(1L, "name", "1111", UserType.Admin, true );
+        when(userRepository.findByUsername("name")).thenReturn(Optional.of(user));
+
+        User result = userService.getByUsername("name");
+        assertNotNull(result);
+        assertEquals("name", result.getUsername());
+    }
+
+    @Test
+    public void testThrowBadRequestWhenUserWIthGivenUsernameExists()
+    {
+        User user = new User(1L, "name", "1111", UserType.Admin, true );
+        when(userRepository.existsByUsername("name")).thenReturn(true);
+
+        BadRequestException thrown = assertThrows(BadRequestException.class,()
+                        -> userService.createUser(user),
+                "Expected createUser to throw, but it didn't");
+
+        assertTrue(thrown.getMessage().contains("User with username " + user.getUsername() + " already exists."));
+    }
+
+
 //    @Test
 //    public void testUpdateUserUsername()
 //    {
 //        User user = new User(1L, "nameAB", "12232", UserType.Cashier, true);
-//
-//        when(userRepository.existsByUsername("newUsername")).thenReturn(true);
+//        userRepository.save(user);
+//        when(userRepository.findByUsername("newUsername")).thenReturn(Optional.of(user));
 //
 //        userService.updateUsername("nameAB", "newUsername");
 //
-//        verify(userRepository).existsByUsername("newUsername");
+//        verify(userRepository).findByUsername("newUsername");
 //
 //        assertEquals("newUsername", user.getUsername());
 //    }
@@ -100,12 +101,12 @@ public class UserServiceTest {
 //    public void testDeleteUserByUsername()
 //    {
 //        User user = new User(1L, "nameABC", "1232", UserType.Cashier, true);
-//
-//        when(userRepository.existsByUsername("nameABC")).thenReturn(false);
+//        userRepository.save(user);
+//        when(userRepository.findByUsername("nameABC")).thenReturn(Optional.of(user));
 //
 //        userService.deleteUserByUsername("nameABC");
 //
-//        verify(userRepository).existsByUsername("nameABC");
+//        verify(userRepository).findByUsername("nameABC");
 //
 //        verify(userRepository, never()).deleteByUsername("nameABC");
 //    }
