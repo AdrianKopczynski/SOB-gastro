@@ -96,7 +96,7 @@ class AdminPanel(tk.Frame):
             ("Usuń użytkownika", self.delete_user),
         ]
 
-        for idx, (label, command) in enumerate(actions):
+        for label, command in actions.items():
             tk.Button(buttons_frame, text=label, font=("Arial", 16), bg="gray", fg="white",
                     width=15, height=2, command=command).pack(pady=10)
 
@@ -170,7 +170,8 @@ class AdminPanel(tk.Frame):
     def show_add_user_form(self):
         """for widget in self.dynamic_frame.winfo_children():
             widget.destroy()"""
-
+        self.clear_dynamic_frame()
+        
         tk.Label(self.dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
 
         tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
@@ -442,13 +443,21 @@ class AdminPanel(tk.Frame):
 
         category_name = self.category_table.item(selected_item, "values")[0]
         self.clear_dynamic_frame()
-
+        id = [entry["id"] for entry in rh.get_categories_list(db) if entry["name"] == category_name]
         tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć kategorię '{category_name}'?", font=("Arial", 14), fg="red").pack(pady=10)
 
         def confirm():
-            self.categories.remove(category_name)
-            self.category_table.delete(selected_item)
-            self.display_message("Sukces", "Kategoria została usunięta.")
+            if category_name == "BRAK":
+                self.display_message("Błąd", "Nie można usunąć tej kategorii.")
+            else:
+                try:
+                    rh.delete_category(db,id[0])
+                except HTTPError:
+                    self.display_message("Błąd", "Nie udało się usunać kategorii.")
+                else:
+                    self.display_message("Sukces", "Kategoria została usunięta.")
+                    self.load_categories()
+                    self.load_meals()
 
         tk.Button(self.dynamic_frame, text="Tak", font=("Arial", 14), bg="green", fg="white", command=confirm).pack(padx=10, pady=10)
         tk.Button(self.dynamic_frame, text="Nie", font=("Arial", 14), bg="red", fg="white", command=self.clear_dynamic_frame).pack(padx=10, pady=10)
@@ -508,7 +517,7 @@ class AdminPanel(tk.Frame):
         meal_price_entry.insert(0, meal_price.replace(" PLN", ""))
         meal_price_entry.pack(pady=5)
         tk.Label(self.dynamic_frame, text="Kategoria", font=("Arial", 14)).pack(pady=5)
-        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=self.categories, font=("Arial", 14))
+        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=[entry["name"] for entry in rh.get_categories_list(db)], font=("Arial", 14))
         meal_category_combo.set(meal_category)
         meal_category_combo.pack(pady=5)
 

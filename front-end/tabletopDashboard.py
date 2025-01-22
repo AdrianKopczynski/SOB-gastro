@@ -2,11 +2,17 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import json
 from orderEditor import OrderEditor
-from requestHandler import RequestHandler
 import os
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ORDERS_FILE = os.path.join(BASE_DIR, "orders.json")
+from requestHandler import RequestHandler as rh
+from urllib.error import HTTPError
+
+try:
+    with open('config.json', "r", encoding="utf-8") as file:
+        config = json.load(file)
+        db = rh(config[0]['connection_addr'])
+except FileNotFoundError:
+    print("Cannot get connection adress!")
 
 
 class TabletopDashboard(tk.Frame):
@@ -66,14 +72,20 @@ class TabletopDashboard(tk.Frame):
 
     def get_orders_by_table(self):
         self.orders_list.delete(*self.orders_list.get_children())
+        
+        try:
+            data = rh.get_all_orders(db)
+            self.orders_list.delete(*self.orders_list.get_children())
+            for entry in data:
+                print(entry)
+                self.orders_list.insert(
+                    "", "end", values=(entry['id'], entry['createdAt'],entry["closed"])
+                )
+        except TypeError as err:
+            print(f"Error while loading meals, error message: {err}")
+            self.orders_list = []
 
-        if os.path.exists(ORDERS_FILE):
-            with open(ORDERS_FILE, "r", encoding="utf-8") as file:
-                all_orders = json.load(file)
-        else:
-            all_orders = []
-
-        self.current_orders = [order for order in all_orders if order["table_id"] == self.table_id]
+        self.current_orders = [order for order in data if order["table_id"] == self.table_id]
         for order in self.current_orders:
             self.orders_list.insert("", "end", values=(
                 order["order_id"], order["created_at"], order.get("comment", ""), order.get("status", "Open")))
