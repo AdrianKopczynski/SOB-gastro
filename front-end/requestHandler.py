@@ -104,8 +104,8 @@ class RequestHandler:
     #---------------------------ORDER------------------------------#
     #--------------------------------------------------------------#
 
-    def get_orders_by_table(self, table_id):
-        return self.send_get_request("order/getOrdersByTable", {"Table_id": table_id})
+    def get_all_orders(self):
+        return self.send_get_request(f"order/getOrder")
 
     def create_order(self, order_data):
         return self.send_post_request("order/createOrder", order_data)
@@ -143,6 +143,9 @@ class RequestHandler:
     
     def delete_meal(self,id):
         return self.send_delete_request(f"management/deleteMeal/{id}")
+    
+    def delete_category(self,id):
+        return self.send_delete_request(f"management/deleteCategory/{id}")
 
     
     

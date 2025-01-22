@@ -32,7 +32,7 @@ class OrderEditor(tk.Frame):
         # meals = self.manager.request_handler.get_meals()
         # return meals if meals else []
 
-        """MEALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "meals.json")
+        MEALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "meals.json")
         if os.path.exists(MEALS_FILE):
             with open(MEALS_FILE, "r", encoding="utf-8") as file:
                 meals = json.load(file)
@@ -40,18 +40,8 @@ class OrderEditor(tk.Frame):
                 return meals
         else:
             messagebox.showerror("Błąd", "Plik meals.json nie istnieje!")
-            return []"""
+            return []
         
-        try:
-            data = rh.get_orders_by_table(db,id)
-            self.meal_table.delete(*self.meal_table.get_children())
-            for entry in data:
-                self.meal_table.insert(
-                    "", "end", values=(entry['name'], entry['price'], entry['category']["name"],)
-                )
-        except TypeError as err:
-            print(f"Error while loading meals, error message: {err}")
-            self.meal_table = []
 
     def create_widgets(self):
         self.grid_rowconfigure(0, weight=0)  
@@ -197,6 +187,17 @@ class OrderEditor(tk.Frame):
             self.order_table.insert("", "end", values=(
                 meal["name"], f"{meal['price']} PLN", meal["quantity"]
             ))
+        
+        try:
+            data = rh.get_orders_by_table(db,id)
+            self.meal_table.delete(*self.meal_table.get_children())
+            for entry in data:
+                self.meal_table.insert(
+                    "", "end", values=(entry['name'], entry['price'], entry['category']["name"],)
+                )
+        except TypeError as err:
+            print(f"Error while loading meals, error message: {err}")
+            self.meal_table = []
 
     def load_order_meals(self):
         self.selected_meals = []
