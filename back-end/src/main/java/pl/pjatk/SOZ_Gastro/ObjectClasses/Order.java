@@ -37,7 +37,20 @@ public class Order {
         createdAt = Instant.now();
         closedAt = null;
     }
+    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, OrderRepository orderRepository,User user, String comment)
+    {
+        createdAt = Instant.now();
+        closedAt = null;
+        this.tabletop = tabletop;
+        this.user = user;
+        this.comment = comment;
+        orderRepository.save(this);
 
+        for (int i = 0; i < mealID.length; i++) {
+            OrderMeal orderMeal = new OrderMeal(mealID[i], this.id);
+            orderMealRepository.save(orderMeal);
+        }
+    }
     public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, OrderRepository orderRepository,User user, String comment, String[] comment2)
     {
         createdAt = Instant.now();
@@ -68,12 +81,17 @@ public class Order {
             orderMealRepository.save(orderMeal);
         }
 
-//        for (Long e : mealID)
-//        {
-//            System.out.println(this.id);
-//            OrderMeal orderMeal = new OrderMeal(e,this.id,comment);
-//            orderMealRepository.save(orderMeal);
-//        }
+        return this;
+    }
+
+    public Order updateOrderNoComment(Long[] mealID, OrderMealRepository orderMealRepository)
+    {
+
+        for (int i = 0; i < mealID.length; i++) {
+            OrderMeal orderMeal = new OrderMeal(mealID[i], this.id);
+            orderMealRepository.save(orderMeal);
+        }
+
         return this;
     }
 

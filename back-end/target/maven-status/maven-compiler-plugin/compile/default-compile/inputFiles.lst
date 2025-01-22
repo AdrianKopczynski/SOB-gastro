@@ -14,6 +14,8 @@ C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\p
 C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\Order.java
 C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\OrderMeal.java
 C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\CreateOrderRequest.java
+C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\NoCommentRequest.java
+C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\NoCommentUpdate.java
 C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\UpdateOrderRequest.java
 C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\Tabletop.java
 C:\Users\ASUS\Documents\GitHub\SOZ-gastro\SOZ-gastro\back-end\src\main\java\pl\pjatk\SOZ_Gastro\ObjectClasses\User.java

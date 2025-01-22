@@ -26,4 +26,6 @@ pl\pjatk\SOZ_Gastro\Repositories\MealRepository.class
 pl\pjatk\SOZ_Gastro\Repositories\OrderMealRepository.class
 pl\pjatk\SOZ_Gastro\Config\SecurityConfig.class
 pl\pjatk\SOZ_Gastro\Controller\ManagementControllerAdvice.class
+pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\NoCommentRequest.class
+pl\pjatk\SOZ_Gastro\ObjectClasses\Requests\NoCommentUpdate.class
 pl\pjatk\SOZ_Gastro\Repositories\OrderRepository.class

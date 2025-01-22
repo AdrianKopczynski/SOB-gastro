@@ -29,6 +29,11 @@ public class OrderService {
         Order order = new Order(mealID, tabletop, orderMealRepository, orderRepository,user, comment, comment2);
         return orderRepository.save(order);
     }
+    public Order addNewOrderNoMealComment(Long[] mealID, Tabletop tabletop, User user, String comment)
+    {
+        Order order = new Order(mealID, tabletop, orderMealRepository, orderRepository,user, comment);
+        return orderRepository.save(order);
+    }
 
     public Order updateOrder(Long[] mealID, String[] comment, Order order)
     {
@@ -38,6 +43,17 @@ public class OrderService {
                     "cannot update closed order with id " + order.getId());
         }
         order.updateOrder(mealID, orderMealRepository, comment);
+        return orderRepository.save(order);
+    }
+
+    public Order updateOrderNoComment(Long[] mealID, Order order)
+    {
+        if(order.isClosed())
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "cannot update closed order with id " + order.getId());
+        }
+        order.updateOrderNoComment(mealID, orderMealRepository);
         return orderRepository.save(order);
     }
 

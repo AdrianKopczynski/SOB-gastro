@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.OrderMeal;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.CreateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.NoCommentRequest;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.NoCommentUpdate;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.UpdateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
@@ -25,6 +27,11 @@ public class OrderController
     public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest createOrderRequest)
     {
         return ResponseEntity.ok(orderService.addNewOrder(createOrderRequest.getMealID(), createOrderRequest.getTabletop(), createOrderRequest.getUser(), createOrderRequest.getComment(), createOrderRequest.getComment2()));
+    }
+    @PostMapping("/createOrderNoComment")
+    public ResponseEntity<Order> createOrderNoComment(@RequestBody NoCommentRequest noCommentRequest)
+    {
+        return ResponseEntity.ok(orderService.addNewOrderNoMealComment(noCommentRequest.getMealID(), noCommentRequest.getTabletop(), noCommentRequest.getUser(), noCommentRequest.getComment()));
     }
 
     @GetMapping("/getOrder/{id}")
@@ -49,6 +56,12 @@ public class OrderController
     public ResponseEntity<Order> updateOrder(@PathVariable("id")int id, @RequestBody UpdateOrderRequest updateOrderRequest)
     {
         return ResponseEntity.ok(orderService.updateOrder(updateOrderRequest.getMealID(), updateOrderRequest.getComment(), orderService.findByID(id)));
+    }
+
+    @PatchMapping("/updateOrderNoComment/{id}")
+    public ResponseEntity<Order> updateOrderNoComment(@PathVariable("id")int id, @RequestBody NoCommentUpdate noCommentUpdate)
+    {
+        return ResponseEntity.ok(orderService.updateOrderNoComment(noCommentUpdate.getMealID(), orderService.findByID(id)));
     }
 
     @GetMapping("/getOrderMeals/{id}")
