@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class ManagementServiceTest {
 
@@ -38,68 +37,55 @@ public class ManagementServiceTest {
     @InjectMocks
     private ManagementService managementService;
 
-//    @Test
-//    public void testGetAvailableTabletopList(){
-//        Tabletop tabletopF = new Tabletop(1L,"nameF",false);
-//        Tabletop tabletopT = new Tabletop(2L,"nameT",true);
-//        when(tabletopRepository.findAllByIdIsNotNullAndIsAvailableTrue())
-//                .thenReturn(Arrays.asList(tabletopT));
-//
-//        List<Tabletop> result = managementService.getAvailableTabletopList();
-//
-//        assertNotNull(result);
-//        assertEquals(1, result.size());
-//        assertEquals(tabletopT.getName(),result.get(0).getName());
-//    }
-//    @Test
-//    public void testGetTabletopList(){
-//        Tabletop tabletopF = new Tabletop(1L, "nameF", "colorF", 5, 6, 1);
-//        Tabletop tabletopT = new Tabletop(2L,"nameT","colorT", 7, 4, 2);
-//        when(tabletopRepository.findAllByIdIsNotNull())
-//                .thenReturn(Arrays.asList(tabletopF,tabletopT));
-//
-//        List<Tabletop> result = managementService.getTabletopList();
-//
-//        assertNotNull(result);
-//        assertEquals(2, result.size());
-//        assertEquals(tabletopT.getName(),result.get(1).getName());
-//    }
-//
-//
-//    @Test
-//    public void testUpdateMealThrowsErrorWhenNoIdFound(){
-//        Category category1 = new Category(1L,"pizza");
-//        Meal meal1 = new Meal(1L,"roma",(BigDecimal.valueOf(25.54f)),category1);
-//
-//        when(mealRepository.findById(1L))
-//                .thenReturn(Optional.empty());
-//
-//        assertThrows(NoSuchElementException.class, () -> managementService.updateMeal(meal1,1L));
-//    }
-//
-//    @Test
-//    public void testUpdateCategoryThrowsErrorWhenNoIdFound(){
-//        Category category1 = new Category(1L,"pizza");
-//
-//        when(categoryRepository.findById(1L))
-//                .thenReturn(Optional.empty());
-//
-//        assertThrows(NoSuchElementException.class, () -> managementService.updateCategory(category1,1L));
-//    }
-//
-//    @Test
-//    public void testUpdateMealChangedName(){
-//        Category category1 = new Category(1L,"pizza");
-//        Meal meal1 = new Meal(1L,"roma",(BigDecimal.valueOf(25.54f)),category1);
-//        Meal meal2 = new Meal(1L,"newRoma",(BigDecimal.valueOf(25.54f)),category1);
-//
-//        when(mealRepository.findById(1L)).thenReturn(Optional.of(meal1));
-//        when(mealRepository.save(meal1)).thenReturn(meal1);
-//
-//        meal1 = managementService.updateMeal(meal2,1L);
-//
-//        assertEquals(meal1.getName(), meal2.getName());
-//
-//    }
+    @Test
+    public void testGetTabletopList(){
+        Tabletop tabletopF = new Tabletop(1L, "nameF", "colorF", 5, 6, 1);
+        Tabletop tabletopT = new Tabletop(2L,"nameT","colorT", 7, 4, 2);
+        when(tabletopRepository.findAllByIdIsNotNull())
+                .thenReturn(Arrays.asList(tabletopF,tabletopT));
+
+        List<Tabletop> result = managementService.getTabletopList();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(tabletopT.getName(),result.get(1).getName());
+    }
+
+
+    @Test
+    public void testUpdateMealThrowsErrorWhenNoIdFound(){
+        Category category1 = new Category(1L,"pizza");
+        Meal meal1 = new Meal(1L,"roma",(BigDecimal.valueOf(25.54f)),category1);
+
+        when(mealRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> managementService.updateMeal(meal1,1L));
+    }
+
+    @Test
+    public void testUpdateCategoryThrowsErrorWhenNoIdFound(){
+        Category category1 = new Category(1L,"pizza");
+
+        when(categoryRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NoSuchElementException.class, () -> managementService.updateCategory(category1,1L));
+    }
+
+    @Test
+    public void testUpdateMealChangedName(){
+        Category category1 = new Category(1L,"pizza");
+        Meal meal1 = new Meal(1L,"roma",(BigDecimal.valueOf(25.54f)),category1);
+        Meal meal2 = new Meal(1L,"newRoma",(BigDecimal.valueOf(25.54f)),category1);
+
+        when(mealRepository.findById(1L)).thenReturn(Optional.of(meal1));
+        when(mealRepository.save(meal1)).thenReturn(meal1);
+
+        meal1 = managementService.updateMeal(meal2,1L);
+
+        assertEquals(meal1.getName(), meal2.getName());
+
+    }
 
 }
