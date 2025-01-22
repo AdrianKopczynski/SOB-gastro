@@ -81,12 +81,17 @@ public class Order {
             orderMealRepository.save(orderMeal);
         }
 
-//        for (Long e : mealID)
-//        {
-//            System.out.println(this.id);
-//            OrderMeal orderMeal = new OrderMeal(e,this.id,comment);
-//            orderMealRepository.save(orderMeal);
-//        }
+        return this;
+    }
+
+    public Order updateOrderNoComment(Long[] mealID, OrderMealRepository orderMealRepository)
+    {
+
+        for (int i = 0; i < mealID.length; i++) {
+            OrderMeal orderMeal = new OrderMeal(mealID[i], this.id);
+            orderMealRepository.save(orderMeal);
+        }
+
         return this;
     }
 
