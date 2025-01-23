@@ -124,8 +124,8 @@ class AdminPanel(tk.Frame):
 
         self.load_users()
 
-        self.dynamic_frame = tk.Frame(frame, bg="white", relief="sunken", bd=2, width=300)
-        self.dynamic_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
+        self.user_dynamic_frame = tk.Frame(frame, bg="white", relief="sunken", bd=2, width=300)
+        self.user_dynamic_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
 
         buttons_frame.grid_propagate(False)
         users_frame.grid_propagate(False)  
@@ -168,22 +168,21 @@ class AdminPanel(tk.Frame):
             self.category_table = []
 
     def show_add_user_form(self):
-        """for widget in self.dynamic_frame.winfo_children():
-            widget.destroy()"""
-        self.clear_dynamic_frame()
-        
-        tk.Label(self.dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
+        for widget in self.user_dynamic_frame.winfo_children():
+            widget.destroy()
 
-        tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
-        username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
+
+        tk.Label(self.user_dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
+        username_entry = tk.Entry(self.user_dynamic_frame, font=("Arial", 14))
         username_entry.pack(pady=5)
     
-        tk.Label(self.dynamic_frame, text="PIN (4 cyfry):", font=("Arial", 14)).pack(pady=5)
-        pin_entry = tk.Entry(self.dynamic_frame, show="*", font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="PIN (4 cyfry):", font=("Arial", 14)).pack(pady=5)
+        pin_entry = tk.Entry(self.user_dynamic_frame, show="*", font=("Arial", 14))
         pin_entry.pack(pady=5)
 
-        tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
-        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
+        user_type_combo = ttk.Combobox(self.user_dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
         user_type_combo.pack(pady=5)
 
         def submit():
@@ -192,20 +191,20 @@ class AdminPanel(tk.Frame):
             user_type = user_type_combo.get()
 
             if not user_name or not login_pin or not user_type:
-                tk.Label(self.dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             if len(login_pin) != 4 or not login_pin.isdigit():
-                tk.Label(self.dynamic_frame, text="PIN musi składać się z 4 cyfr!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="PIN musi składać się z 4 cyfr!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             # if self.request_handler.check_user_exists(user_name):
             if self.check_username_exists(user_name):
-                tk.Label(self.dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
             
             if self.check_pin_exists(login_pin):
-                tk.Label(self.dynamic_frame, text="Pin jest już w użyciu!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Pin jest już w użyciu!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             new_user = {
@@ -218,19 +217,19 @@ class AdminPanel(tk.Frame):
 
             if success:
                 self.load_users()
-                tk.Label(self.dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
             else:
-                tk.Label(self.dynamic_frame, text="Nie udało się dodać użytkownika.", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Nie udało się dodać użytkownika.", fg="red", font=("Arial", 12)).pack(pady=5)
         
-        tk.Button(self.dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+        tk.Button(self.user_dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
 
     def delete_user(self):
         selected_item = self.users_listbox.selection()
         if selected_item:
             user_id = int(self.users_listbox.item(selected_item, "values")[0])
 
-            self.clear_dynamic_frame()
-            tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć użytkownika o ID {user_id}?",
+            self.clear_user_dynamic_frame()
+            tk.Label(self.user_dynamic_frame, text=f"Czy na pewno chcesz usunąć użytkownika o ID {user_id}?",
                     font=("Arial", 12), fg="red").pack(pady=10)
 
             def confirm_deletion():
@@ -246,25 +245,25 @@ class AdminPanel(tk.Frame):
 
                     self.load_users()
 
-                    self.clear_dynamic_frame()
-                    success_label = tk.Label(self.dynamic_frame, text=f"Użytkownik o ID {user_id} został usunięty.",
+                    self.clear_user_dynamic_frame()
+                    success_label = tk.Label(self.user_dynamic_frame, text=f"Użytkownik o ID {user_id} został usunięty.",
                                             font=("Arial", 12), fg="green")
                     success_label.pack(pady=10)
 
                     self.after(3000, lambda: success_label.destroy())
 
                 except FileNotFoundError:
-                    error_label = tk.Label(self.dynamic_frame, text="Plik z użytkownikami nie istnieje.",
+                    error_label = tk.Label(self.user_dynamic_frame, text="Plik z użytkownikami nie istnieje.",
                                         font=("Arial", 12), fg="red")
                     error_label.pack(pady=10)
                     self.after(3000, lambda: error_label.destroy())
 
-            tk.Button(self.dynamic_frame, text="Usun", command=confirm_deletion,
+            tk.Button(self.user_dynamic_frame, text="Usun", command=confirm_deletion,
                     fg="white", bg="red", font=("Arial", 12)).pack(pady=10)
 
         else:
-            self.clear_dynamic_frame()
-            warning_label = tk.Label(self.dynamic_frame, text="Proszę wybrać użytkownika do usunięcia.",
+            self.clear_user_dynamic_frame()
+            warning_label = tk.Label(self.user_dynamic_frame, text="Proszę wybrać użytkownika do usunięcia.",
                                     fg="red", font=("Arial", 12))
             warning_label.pack(pady=5)
             self.after(3000, lambda: warning_label.destroy())
@@ -279,18 +278,18 @@ class AdminPanel(tk.Frame):
         user_data = self.users_listbox.item(selected_item, "values")
         user_id, username, user_type = user_data[:3]
 
-        for widget in self.dynamic_frame.winfo_children():
+        for widget in self.user_dynamic_frame.winfo_children():
             widget.destroy()
 
-        tk.Label(self.dynamic_frame, text="Edytuj użytkownika", font=("Arial", 18)).pack(pady=10)
+        tk.Label(self.user_dynamic_frame, text="Edytuj użytkownika", font=("Arial", 18)).pack(pady=10)
 
-        tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
-        username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
+        username_entry = tk.Entry(self.user_dynamic_frame, font=("Arial", 14))
         username_entry.insert(0, username)
         username_entry.pack(pady=5)
 
-        tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
-        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
+        user_type_combo = ttk.Combobox(self.user_dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
         user_type_combo.set(user_type)
         user_type_combo.pack(pady=5)
 
@@ -321,10 +320,10 @@ class AdminPanel(tk.Frame):
             except FileNotFoundError:
                 messagebox.showerror("Błąd", "Plik u nie istnieje.")
 
-        tk.Button(self.dynamic_frame, text="Zapisz", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+        tk.Button(self.user_dynamic_frame, text="Zapisz", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
 
-    def clear_dynamic_frame(self):
-        for widget in self.dynamic_frame.winfo_children():
+    def clear_user_dynamic_frame(self):
+        for widget in self.user_dynamic_frame.winfo_children():
             widget.destroy()
 
     def check_username_exists(self, userName):
