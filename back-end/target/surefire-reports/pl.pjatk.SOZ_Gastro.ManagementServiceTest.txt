@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: pl.pjatk.SOZ_Gastro.ManagementServiceTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.193 s -- in pl.pjatk.SOZ_Gastro.ManagementServiceTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.092 s -- in pl.pjatk.SOZ_Gastro.ManagementServiceTest

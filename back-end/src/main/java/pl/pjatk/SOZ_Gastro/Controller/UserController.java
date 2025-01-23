@@ -53,26 +53,26 @@ public class UserController
     }
 
     //Puts
-    @PutMapping("/updateUsername/{username}")
-    public ResponseEntity<User> updateUsernameBy(@PathVariable String username, @RequestBody String newUsername)
+    @PatchMapping("/updateUsername/{username}")
+    public ResponseEntity<User> updateUsernameBy(@PathVariable String username, @RequestParam String newUsername)
     {
         return ResponseEntity.ok().body(this.userService.updateUsername(username, newUsername));
     }
 
-    @PutMapping("/updatePin/{loginPin}")
-    public ResponseEntity<User> updateLogin(@PathVariable String loginPin, @RequestBody String newLoginPin)
+    @PatchMapping("/updatePin/{loginPin}")
+    public ResponseEntity<User> updateLogin(@PathVariable String loginPin, @RequestParam String newLoginPin)
     {
         return ResponseEntity.ok().body(this.userService.updateLoginPin(loginPin, newLoginPin));
     }
 
-    @PutMapping("/updateUserType/{username}")
-    public ResponseEntity<User> updateUserType(@PathVariable String username, @RequestBody UserType userType)
+    @PatchMapping("/updateUserType/{username}")
+    public ResponseEntity<User> updateUserType(@PathVariable String username, @RequestParam UserType userType)
     {
         return ResponseEntity.ok().body(this.userService.updateUserType(username, userType));
     }
 
-    @PutMapping("/updateEnabled/{username}")
-    public ResponseEntity<User> updateEnabled(@PathVariable String username, @RequestBody boolean enabled)
+    @PatchMapping("/updateEnabled/{username}")
+    public ResponseEntity<User> updateEnabled(@PathVariable String username, @RequestParam boolean enabled)
     {
         return ResponseEntity.ok().body(this.userService.updateEnabled(username, enabled));
     }

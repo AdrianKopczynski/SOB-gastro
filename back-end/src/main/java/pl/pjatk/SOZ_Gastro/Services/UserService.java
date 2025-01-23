@@ -22,25 +22,27 @@ public class UserService
         this.userRepository = userRepository;
     }
 
-    public User createUser(User user) throws BadRequestException
-    {
+    public User createUser(User user) throws BadRequestException {
 
-        if (user == null || user.getUsername() == null || user.getLoginPin() == null)
-        {
+        if (user == null || user.getUsername() == null || user.getLoginPin() == null) {
             throw new BadRequestException("Username and pin are required");
         }
 
-        if (userRepository.existsByUsername(user.getUsername()))
-        {
-            throw new BadRequestException("User with username " + user.getUsername() + " already exists.");
+        String trimmedUsername = user.getUsername().trim();
+        String trimmedLoginPin = user.getLoginPin().trim();
+
+        user.setUsername(trimmedUsername);
+        user.setLoginPin(trimmedLoginPin);
+
+        if (userRepository.existsByUsername(trimmedUsername)) {
+            throw new BadRequestException("User with username " + trimmedUsername + " already exists.");
         }
 
-        if (userRepository.existsByLoginPin(user.getLoginPin()))
-        {
+        if (userRepository.existsByLoginPin(trimmedLoginPin)) {
             throw new BadRequestException("Try another PIN");
         }
 
-         return userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public User getByUsername(String username) throws UserNotFoundException
@@ -99,9 +101,7 @@ public class UserService
         userRepository.deleteByUsername(username);
     }
 
-    public User updateUsername(String username, String newUsername) throws UserNotFoundException
-    {
-
+    public User updateUsername(String username, String newUsername) throws UserNotFoundException {
 
         if (username == null || username.trim().isEmpty()) {
             throw new IllegalArgumentException("Username cannot be null or empty");
@@ -110,8 +110,11 @@ public class UserService
             throw new IllegalArgumentException("New username cannot be null or empty");
         }
 
-        User user = getByUsername(username);
-        user.setUsername(newUsername);
+        String trimmedUsername = username.trim();
+        String trimmedNewUsername = newUsername.trim();
+
+        User user = getByUsername(trimmedUsername);
+        user.setUsername(trimmedNewUsername);
 
         return userRepository.save(user);
     }
