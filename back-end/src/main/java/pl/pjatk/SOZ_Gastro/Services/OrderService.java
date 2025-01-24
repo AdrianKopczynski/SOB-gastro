@@ -24,12 +24,12 @@ public class OrderService {
     }
 
     ///Tablica mealID reprezentuje pozycje w zamówieniu
-    public Order addNewOrder(Long[] mealID, Tabletop tabletop, User user, String comment, String[] comment2)
+    public Order addNewOrder(Long[] mealID, Long tabletop, User user, String comment, String[] comment2)
     {
         Order order = new Order(mealID, tabletop, orderMealRepository, orderRepository,user, comment, comment2);
         return orderRepository.save(order);
     }
-    public Order addNewOrderNoMealComment(Long[] mealID, Tabletop tabletop, User user, String comment)
+    public Order addNewOrderNoMealComment(Long[] mealID, Long tabletop, User user, String comment)
     {
         Order order = new Order(mealID, tabletop, orderMealRepository, orderRepository,user, comment);
         return orderRepository.save(order);
@@ -44,6 +44,26 @@ public class OrderService {
         }
         order.updateOrder(mealID, orderMealRepository, comment);
         return orderRepository.save(order);
+    }
+
+    public void deleteOrderMeal(Long mealID)
+    {
+        if (mealID == null)
+        {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        getOrderMealById(mealID);
+         orderMealRepository.deleteById(mealID);
+    }
+
+    public void deleteOrder(Integer id)
+    {
+        if (id == null)
+        {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        findByID(id);
+        orderRepository.deleteById(id);
     }
 
     public Order updateOrderNoComment(Long[] mealID, Order order)

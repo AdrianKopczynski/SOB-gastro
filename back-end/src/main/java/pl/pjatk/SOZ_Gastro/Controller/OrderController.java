@@ -69,4 +69,19 @@ public class OrderController
     {
         return ResponseEntity.ok(orderService.getOrderMealById(id));
     }
+
+    @DeleteMapping("/deleteOrder/{id}")
+    public ResponseEntity<String> deleteOrderById(@PathVariable("id") int id)
+    {
+        this.orderService.deleteOrder(id);
+        return ResponseEntity.ok().body("Order deleted");
+    }
+
+    @DeleteMapping("/deleteOrderMeal/{id}")
+    public ResponseEntity<String> deleteOrderMealById(@PathVariable("id") Long id)
+    {
+        this.orderService.deleteOrderMeal(id);
+        return ResponseEntity.ok().body("OrderMeal deleted");
+    }
+
 }

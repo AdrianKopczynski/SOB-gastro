@@ -5,7 +5,7 @@ import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 
 public class CreateOrderRequest {
     private Long[] mealID;
-    private Tabletop tabletop;
+    private Long tabletop;
     private User user;
     private String comment;
     private String[] comment2;
@@ -43,11 +43,11 @@ public class CreateOrderRequest {
         this.mealID = mealID;
     }
 
-    public Tabletop getTabletop() {
+    public Long getTabletop() {
         return tabletop;
     }
 
-    public void setTabletop(Tabletop tabletop) {
+    public void setTabletop(Long tabletop) {
         this.tabletop = tabletop;
     }
 }
