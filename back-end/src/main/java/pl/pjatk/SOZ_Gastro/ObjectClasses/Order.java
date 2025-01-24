@@ -20,9 +20,9 @@ public class Order {
     private Instant closedAt;       //timestamp zamknięcia zamówienia
                                     //Jeśli closedAt = Null; to zamówienie jest otwarte
     private String comment;
-    @ManyToOne//(cascade = CascadeType.PERSIST)
-    @JoinColumn(name="tabletop_id", nullable = false)
-    private Tabletop tabletop;
+//    @ManyToOne//(cascade = CascadeType.PERSIST)
+//    @JoinColumn(name="tabletop_id", nullable = false)
+    private Long tabletop;
 
 
     public Order()
@@ -31,13 +31,13 @@ public class Order {
         closedAt = null;
     }
 
-    public Order(Tabletop tabletop)
-    {
-        this.tabletop = tabletop;
-        createdAt = Instant.now();
-        closedAt = null;
-    }
-    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, OrderRepository orderRepository,User user, String comment)
+//    public Order(Tabletop tabletop)
+//    {
+//        this.tabletop = tabletop;
+//        createdAt = Instant.now();
+//        closedAt = null;
+//    }
+    public Order(Long[] mealID,  Long tabletop, OrderMealRepository orderMealRepository, OrderRepository orderRepository,User user, String comment)
     {
         createdAt = Instant.now();
         closedAt = null;
@@ -51,7 +51,7 @@ public class Order {
             orderMealRepository.save(orderMeal);
         }
     }
-    public Order(Long[] mealID, Tabletop tabletop, OrderMealRepository orderMealRepository, OrderRepository orderRepository,User user, String comment, String[] comment2)
+    public Order(Long[] mealID, Long tabletop, OrderMealRepository orderMealRepository, OrderRepository orderRepository,User user, String comment, String[] comment2)
     {
         createdAt = Instant.now();
         closedAt = null;
@@ -95,6 +95,7 @@ public class Order {
         return this;
     }
 
+
     public Long getId() {
         return id;
     }
@@ -117,11 +118,11 @@ public class Order {
         this.id = id;
     }
 
-    public Tabletop getTabletop() {
+    public Long getTabletop() {
         return tabletop;
     }
 
-    public void setTabletop(Tabletop tabletop) {
+    public void setTabletop(Long tabletop) {
         this.tabletop = tabletop;
     }
 

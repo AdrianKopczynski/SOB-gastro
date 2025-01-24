@@ -6,7 +6,7 @@ import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 public class NoCommentRequest
 {
     private Long[] mealID;
-    private Tabletop tabletop;
+    private Long tabletop;
     private User user;
     private String comment;
 
@@ -36,11 +36,11 @@ public class NoCommentRequest
         this.mealID = mealID;
     }
 
-    public Tabletop getTabletop() {
+    public Long getTabletop() {
         return tabletop;
     }
 
-    public void setTabletop(Tabletop tabletop) {
+    public void setTabletop(Long tabletop) {
         this.tabletop = tabletop;
     }
 }
