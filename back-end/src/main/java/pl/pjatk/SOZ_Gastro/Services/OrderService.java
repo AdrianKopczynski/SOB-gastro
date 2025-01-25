@@ -1,6 +1,8 @@
 package pl.pjatk.SOZ_Gastro.Services;
 
+import jakarta.transaction.Transactional;
 import org.aspectj.weaver.ast.Or;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,6 +14,7 @@ import pl.pjatk.SOZ_Gastro.Repositories.OrderMealRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class OrderService {
@@ -52,17 +55,18 @@ public class OrderService {
         {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        getOrderMealById(mealID);
+        getOrderMeal(mealID);
          orderMealRepository.deleteById(mealID);
     }
 
-    public void deleteOrder(Integer id)
+
+
+    public void deleteOrder(Long id)
     {
         if (id == null)
         {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        findByID(id);
         orderRepository.deleteById(id);
     }
 
@@ -94,15 +98,29 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order findByID(int id)
+    public Order findByID(Long id)
     {
         return orderRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "order with id " + id +" doesnt exist"));
     }
 
+    public OrderMeal getOrderMeal(Long id) throws NoSuchElementException {
+        return orderMealRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("OrderMeal with given id not found"));
+    }
     public List<OrderMeal> getOrderMealById(Long id)
     {
         return orderMealRepository.findAllByOrderId(id);
+    }
+
+    @Transactional
+    public void deleteOrderMealsByOrderId(Long orderId)
+    {
+        if (orderId == null)
+        {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        orderMealRepository.deleteOrderMealsByOrderId(orderId);
     }
 }
