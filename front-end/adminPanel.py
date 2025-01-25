@@ -4,6 +4,7 @@ from requestHandler import RequestHandler as rh
 import json
 import os
 from urllib.error import HTTPError
+import time
 
 base_dir = os.path.dirname(os.path.abspath(__file__)) #poki operujemy na plikach to dodaje bo jesli uzywas vscode a pycharma to inaczej pliki moze struturyzowac
 file_path = os.path.join(base_dir, 'users2.json')
@@ -96,7 +97,7 @@ class AdminPanel(tk.Frame):
             ("Usuń użytkownika", self.delete_user),
         ]
 
-        for label, command in actions.items():
+        for idx,(label, command) in enumerate(actions):
             tk.Button(buttons_frame, text=label, font=("Arial", 16), bg="gray", fg="white",
                     width=15, height=2, command=command).pack(pady=10)
 
@@ -139,6 +140,8 @@ class AdminPanel(tk.Frame):
 
         self.users_listbox.delete(*self.users_listbox.get_children())
         for user in users:
+            if user['username'] == 'admin':
+                continue
             self.users_listbox.insert(
                 "", "end", values=(user['id'], user['username'], user['userType'], "Tak" if user['enabled'] else "Nie")
             )
@@ -288,6 +291,10 @@ class AdminPanel(tk.Frame):
         username_entry.insert(0, username)
         username_entry.pack(pady=5)
 
+        tk.Label(self.user_dynamic_frame, text="PIN (4 cyfry):", font=("Arial", 14)).pack(pady=5)
+        pin_entry = tk.Entry(self.user_dynamic_frame, show="*", font=("Arial", 14))
+        pin_entry.pack(pady=5)
+
         tk.Label(self.user_dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
         user_type_combo = ttk.Combobox(self.user_dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
         user_type_combo.set(user_type)
@@ -296,29 +303,45 @@ class AdminPanel(tk.Frame):
         def submit():
             new_username = username_entry.get().strip()
             new_user_type = user_type_combo.get()
+            new_login_pin = pin_entry.get().strip()
 
             if not new_username or not new_user_type:
                 messagebox.showerror("Błąd", "Wszystkie pola są wymagane!")
                 return
 
             try:
-                with open("users2.json", "r", encoding="utf-8") as f:
-                    users = json.load(f)
 
-                for user in users:
-                    if user["id"] == int(user_id):
-                        user["username"] = new_username
-                        user["userType"] = new_user_type
-                        break
+                if not new_username or not new_login_pin or not new_user_type:
+                    tk.Label(self.user_dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
 
-                with open("users2.json", "w", encoding="utf-8") as f:
-                    json.dump(users, f, indent=4)
+                if len(new_login_pin) != 4 or not new_login_pin.isdigit():
+                    tk.Label(self.user_dynamic_frame, text="PIN musi składać się z 4 cyfr!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
+
+                if self.check_username_exists(new_username):
+                    tk.Label(self.user_dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
+                
+                if self.check_pin_exists(new_login_pin):
+                    tk.Label(self.user_dynamic_frame, text="Pin jest już w użyciu!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
+
+                new_user = {
+                    "loginPin": int(new_login_pin),
+                    "userType": new_user_type,
+                    "enabled": "True"
+                }
+                old_user = rh.get_user_by_username(db,username)
+                pin = old_user["loginPin"]
+                rh.update_username(db,username,new_username)
+                rh.update_user(db,new_username,pin,new_user)
 
                 self.load_users()
                 messagebox.showinfo("Sukces", "Użytkownik został zaktualizowany.")
 
-            except FileNotFoundError:
-                messagebox.showerror("Błąd", "Plik u nie istnieje.")
+            except HTTPError:
+                messagebox.showinfo("Błądu", "Nie udało się zaktualizować użytkownika.")
 
         tk.Button(self.user_dynamic_frame, text="Zapisz", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
 
