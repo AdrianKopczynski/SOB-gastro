@@ -23,16 +23,18 @@ class OrderEditor(tk.Frame):
         self.selected_meals = []
 
         self.meals = self.load_meals()
-        self.create_widgets()
 
-        if self.order:
-            self.load_order_meals()
+        self.difference_positive = []
+        self.difference_negative = []
+        
+        self.create_widgets()
+        self.load_order_meals(self.manager.username)
 
     def load_meals(self):
         # meals = self.manager.request_handler.get_meals()
         # return meals if meals else []
 
-        MEALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "meals.json")
+        """MEALS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "meals.json")
         if os.path.exists(MEALS_FILE):
             with open(MEALS_FILE, "r", encoding="utf-8") as file:
                 meals = json.load(file)
@@ -40,7 +42,15 @@ class OrderEditor(tk.Frame):
                 return meals
         else:
             messagebox.showerror("Błąd", "Plik meals.json nie istnieje!")
-            return []
+            return []"""
+        """print(self.order)
+        ids = rh.get_order_meals(db,self.order["id"])
+        ids_counted = [entry["mealId"] for entry in ids]
+        print(ids_counted)
+        meals = [entry for entry in rh.get_all_meals(db) if entry["id"] in ids_counted]
+        print(meals)"""
+        meals = rh.get_all_meals(db)
+        return meals
         
 
     def create_widgets(self):
@@ -60,8 +70,10 @@ class OrderEditor(tk.Frame):
         tk.Label(comment_frame, text="Komentarz do zamówienia:", font=("Arial", 14)).pack(anchor="w", padx=5)
         self.comment_text = tk.Text(comment_frame, font=("Arial", 14), height=5, width=80, wrap="word")
         self.comment_text.pack(fill="x", padx=5)
-
+        #print(self.order["comment"])
         if self.order and "comment" in self.order:
+            if self.order["comment"] is None:
+                self.order["comment"] = ""
             self.comment_text.delete("1.0", tk.END)
             self.comment_text.insert("1.0", self.order["comment"])
 
@@ -94,9 +106,9 @@ class OrderEditor(tk.Frame):
         all_button = tk.Button(scrollable_frame, text="All", font=("Arial", 14), command=self.show_all_meals)
         all_button.pack(side="left", padx=5)
 
-        for category in self.categories:
-            button = tk.Button(scrollable_frame, text=category, font=("Arial", 14), height=1,
-                   command=lambda c=category: self.filter_meals_by_category(c))
+        for category in rh.get_categories_list(db):
+            button = tk.Button(scrollable_frame, text=category["name"], font=("Arial", 14), height=1,
+                   command=lambda c=category["name"]: self.filter_meals_by_category(c))
             button.pack(side="left", padx=5)
 
         left_frame = tk.Frame(self)
@@ -148,22 +160,22 @@ class OrderEditor(tk.Frame):
 
     def update_meal_table(self):
         self.meal_table.delete(*self.meal_table.get_children())
-        for meal in self.meals:
+        for meal in rh.get_all_meals(db):
             row_id = self.meal_table.insert("", "end", values=(meal["name"], f"{meal['price']} PLN"))
             self.meal_table.item(row_id, tags=row_id)
-            self.meal_table.tag_bind(row_id, "<Button-1>", lambda event, meal_id=meal["meal_id"]: self.add_meal_to_order(meal_id))
+            self.meal_table.tag_bind(row_id, "<Button-1>", lambda event, meal_id=meal["id"]: self.add_meal_to_order(meal_id))
         
 
     def add_meal_to_order(self, meal_id):
-        meal = next((m for m in self.meals if m["meal_id"] == meal_id), None)
+        meal = next((m for m in self.meals if m["id"] == meal_id), None)
         if meal:
             for selected in self.selected_meals:
-                if selected["meal_id"] == meal_id:
+                if selected["id"] == meal_id:
                     selected["quantity"] += 1
                     self.update_order_table()
                     return
             self.selected_meals.append({
-                "meal_id": meal["meal_id"],
+                "id": meal["id"],
                 "name": meal["name"],
                 "price": meal["price"],
                 "quantity": 1
@@ -185,36 +197,49 @@ class OrderEditor(tk.Frame):
         self.order_table.delete(*self.order_table.get_children())
         for meal in self.selected_meals:
             self.order_table.insert("", "end", values=(
-                meal["name"], f"{meal['price']} PLN", meal["quantity"]
+                meal["name"], f"{meal['price']} PLN", 1
             ))
         
-        try:
-            data = rh.get_orders_by_table(db,id)
+        """try:
+            data = rh.get_all_orders(db)
             self.meal_table.delete(*self.meal_table.get_children())
             for entry in data:
                 self.meal_table.insert(
-                    "", "end", values=(entry['name'], entry['price'], entry['category']["name"],)
+                    "", "end", values=(entry['name'], entry['price'], entry['category']['name'],)
                 )
         except TypeError as err:
             print(f"Error while loading meals, error message: {err}")
-            self.meal_table = []
+            self.meal_table = []"""
 
     def load_order_meals(self):
         self.selected_meals = []
-        if self.order and "meals" in self.order:
-            for meal in self.order["meals"]:
-                self.selected_meals.append({
-                    "meal_id": meal["meal_id"],
-                    "name": meal["name"],
-                    "price": meal["price"],
-                    "quantity": meal.get("quantity", 1)
-                })
+        if self.order:
+            ids = [entry["mealId"] for entry in rh.get_order_meals(db,self.order["id"])]
+            print(ids)
+            for meal in rh.get_all_meals(db):
+                if meal["id"] in ids:
+                    self.selected_meals.append({
+                        "id": meal["id"],
+                        "name": meal["name"],
+                        "price": meal["price"],
+                        "quantity": self.cal_meal_quantity(ids,meal["id"])
+                    })
+                    print(meal)
+                    print(self.cal_meal_quantity(ids,meal["id"]))
         if self.order and "comment" in self.order:
+            if self.order["comment"] is None:
+                self.order["comment"] == ""
             self.comment_text.delete("1.0", tk.END)
             self.comment_text.insert("1.0", self.order["comment"])
+
         self.update_order_table()
 
-
+    def cal_meal_quantity(self,mealTable,id):
+        counter = 0
+        for ids in mealTable:
+            if ids == id:
+                counter +=1
+        return counter
 
     def save_order(self):
         if not self.selected_meals:
@@ -274,13 +299,14 @@ class OrderEditor(tk.Frame):
         self.update_meal_table()
 
     def filter_meals_by_category(self, category):
-        filtered_meals = [meal for meal in self.meals if meal["category"] == category]
+        filtered_meals = [meal for meal in self.meals if meal["category"]["name"] == category]
         self.update_meal_table(filtered_meals)
 
     def update_meal_table(self, meals=None):
         self.meal_table.delete(*self.meal_table.get_children())
         meals_to_display = meals if meals else self.meals
         for meal in meals_to_display:
+            #print(meal)
             row_id = self.meal_table.insert("", "end", values=(meal["name"], f"{meal['price']} PLN"))
             self.meal_table.item(row_id, tags=row_id)
-            self.meal_table.tag_bind(row_id, "<Button-1>", lambda event, meal_id=meal["meal_id"]: self.add_meal_to_order(meal_id))
+            self.meal_table.tag_bind(row_id, "<Button-1>", lambda event, meal_id=meal["id"]: self.add_meal_to_order(meal_id))

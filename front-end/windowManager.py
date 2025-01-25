@@ -76,6 +76,9 @@ class WindowManager:
     def exit_application(self, event=None):
         self.root.destroy()
 
+    def get_user(self):
+        return self.username
+
     def switch_to(self, frame_name, **kwargs):
         if self.current_frame:
             self.current_frame.destroy()
