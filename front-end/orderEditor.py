@@ -28,7 +28,7 @@ class OrderEditor(tk.Frame):
         self.difference_negative = []
         
         self.create_widgets()
-        self.load_order_meals(self.manager.username)
+        self.load_order_meals()
 
     def load_meals(self):
         # meals = self.manager.request_handler.get_meals()
@@ -140,9 +140,12 @@ class OrderEditor(tk.Frame):
 
         buttons_frame = tk.Frame(self)
         buttons_frame.grid(row=4, column=0, columnspan=2, pady=10)
-
-        tk.Button(buttons_frame, text="Zapisz Zamówienie", font=("Arial", 14), bg="green", fg="white",
+        if self.order:
+            tk.Button(buttons_frame, text="Zapisz Zamówienie", font=("Arial", 14), bg="green", fg="white",
                 command=self.save_order).pack(side="left", padx=10)
+        else:
+            tk.Button(buttons_frame, text="Dodaj Zamówienie", font=("Arial", 14), bg="green", fg="white",
+                command=self.add_order).pack(side="left", padx=10)
 
         tk.Button(buttons_frame, text="Anuluj", font=("Arial", 14), bg="red", fg="white",
                 command=lambda: self.manager.switch_to("TabletopDashboard",
@@ -150,6 +153,9 @@ class OrderEditor(tk.Frame):
                                                         table_id=self.manager.current_table_id)).pack(side="right", padx=10)
         self.order_table.bind("<ButtonRelease-1>", self.on_order_click)
 
+    def add_order(self):
+        print("Dodaje zamówienie")
+        return
 
     def on_order_click(self, event):
         selected_item = self.order_table.focus()
@@ -181,6 +187,14 @@ class OrderEditor(tk.Frame):
                 "quantity": 1
             })
             self.update_order_table()
+            print(self.selected_meals)
+
+    def prepare_meal_list(self,meals):
+        ids = []
+        for meal in meals:
+            for quantity in enumerate(meal["quantity"]):
+                ids.append(meal["id"])
+        print(ids)
 
     def remove_meal_from_order_by_name(self, meal_name):
         for selected in self.selected_meals:
@@ -197,25 +211,13 @@ class OrderEditor(tk.Frame):
         self.order_table.delete(*self.order_table.get_children())
         for meal in self.selected_meals:
             self.order_table.insert("", "end", values=(
-                meal["name"], f"{meal['price']} PLN", 1
+                meal["name"], f"{meal['price']} PLN", meal["quantity"]
             ))
-        
-        """try:
-            data = rh.get_all_orders(db)
-            self.meal_table.delete(*self.meal_table.get_children())
-            for entry in data:
-                self.meal_table.insert(
-                    "", "end", values=(entry['name'], entry['price'], entry['category']['name'],)
-                )
-        except TypeError as err:
-            print(f"Error while loading meals, error message: {err}")
-            self.meal_table = []"""
 
     def load_order_meals(self):
         self.selected_meals = []
         if self.order:
             ids = [entry["mealId"] for entry in rh.get_order_meals(db,self.order["id"])]
-            print(ids)
             for meal in rh.get_all_meals(db):
                 if meal["id"] in ids:
                     self.selected_meals.append({
@@ -224,8 +226,6 @@ class OrderEditor(tk.Frame):
                         "price": meal["price"],
                         "quantity": self.cal_meal_quantity(ids,meal["id"])
                     })
-                    print(meal)
-                    print(self.cal_meal_quantity(ids,meal["id"]))
         if self.order and "comment" in self.order:
             if self.order["comment"] is None:
                 self.order["comment"] == ""
@@ -249,47 +249,7 @@ class OrderEditor(tk.Frame):
         new_comment = self.comment_text.get("1.0", tk.END).strip()
         comment = self.order["comment"] if self.order and "comment" in self.order and self.order["comment"] == new_comment else new_comment
 
-        # Na pozniej do zapisu zamówienia do backendu
-        # order_data = {
-        #     "table_id": self.manager.current_table_id,
-        #     "status": "Open",
-        #     "comment": comment,
-        #     "meals": self.selected_meals
-        # }
-        # if self.order:
-        #     self.manager.request_handler.edit_order(self.order["order_id"], order_data)
-        # else:
-        #     self.manager.request_handler.create_order(order_data)
 
-        ORDERS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "orders.json")
-        if os.path.exists(ORDERS_FILE):
-            with open(ORDERS_FILE, "r", encoding="utf-8") as file:
-                orders = json.load(file)
-        else:
-            orders = []
-
-        if self.order:
-            for o in orders:
-                if o['order_id'] == self.order['order_id']:
-                    o['meals'] = self.selected_meals
-                    o['comment'] = comment
-                    break
-            messagebox.showinfo("Sukces", "Zamówienie zaktualizowane.")
-        else:
-            new_order_id = max([o['order_id'] for o in orders], default=0) + 1
-            new_order = {
-                "order_id": new_order_id,
-                "table_id": self.manager.current_table_id,
-                "status": "Open",
-                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "comment": comment,
-                "meals": self.selected_meals
-            }
-            orders.append(new_order)
-            messagebox.showinfo("Sukces", "Zamówienie utworzone.")
-
-        with open(ORDERS_FILE, "w", encoding="utf-8") as file:
-            json.dump(orders, file, indent=4, ensure_ascii=False)
 
         self.manager.switch_to("TabletopDashboard",
                             table_id=self.manager.current_table_id,
