@@ -2,6 +2,7 @@ package pl.pjatk.SOZ_Gastro.Services;
 
 import jakarta.transaction.Transactional;
 import org.aspectj.weaver.ast.Or;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,6 +14,7 @@ import pl.pjatk.SOZ_Gastro.Repositories.OrderMealRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.OrderRepository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class OrderService {
@@ -53,7 +55,7 @@ public class OrderService {
         {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        getOrderMealById(mealID);
+        getOrderMeal(mealID);
          orderMealRepository.deleteById(mealID);
     }
 
@@ -103,6 +105,10 @@ public class OrderService {
                 "order with id " + id +" doesnt exist"));
     }
 
+    public OrderMeal getOrderMeal(Long id) throws NoSuchElementException {
+        return orderMealRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("OrderMeal with given id not found"));
+    }
     public List<OrderMeal> getOrderMealById(Long id)
     {
         return orderMealRepository.findAllByOrderId(id);
