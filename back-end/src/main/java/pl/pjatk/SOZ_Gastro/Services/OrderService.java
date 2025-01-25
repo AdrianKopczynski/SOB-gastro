@@ -1,5 +1,6 @@
 package pl.pjatk.SOZ_Gastro.Services;
 
+import jakarta.transaction.Transactional;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -56,13 +57,14 @@ public class OrderService {
          orderMealRepository.deleteById(mealID);
     }
 
-    public void deleteOrder(Integer id)
+
+
+    public void deleteOrder(Long id)
     {
         if (id == null)
         {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        findByID(id);
         orderRepository.deleteById(id);
     }
 
@@ -94,7 +96,7 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-    public Order findByID(int id)
+    public Order findByID(Long id)
     {
         return orderRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -104,5 +106,15 @@ public class OrderService {
     public List<OrderMeal> getOrderMealById(Long id)
     {
         return orderMealRepository.findAllByOrderId(id);
+    }
+
+    @Transactional
+    public void deleteOrderMealsByOrderId(Long orderId)
+    {
+        if (orderId == null)
+        {
+            throw new IllegalArgumentException("Id cannot be null");
+        }
+        orderMealRepository.deleteOrderMealsByOrderId(orderId);
     }
 }

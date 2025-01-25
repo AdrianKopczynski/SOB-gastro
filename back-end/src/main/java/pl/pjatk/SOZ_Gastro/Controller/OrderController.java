@@ -35,7 +35,7 @@ public class OrderController
     }
 
     @GetMapping("/getOrder/{id}")
-    public ResponseEntity<Order> getOrderFromID(@PathVariable("id")int id)
+    public ResponseEntity<Order> getOrderFromID(@PathVariable("id")Long id)
     {
         return ResponseEntity.ok(orderService.findByID(id));
     }
@@ -47,19 +47,19 @@ public class OrderController
     }
 
     @PostMapping("/closeOrder/{id}")
-    public ResponseEntity<Order> closeOrder(@PathVariable("id")int id)
+    public ResponseEntity<Order> closeOrder(@PathVariable("id")Long id)
     {
         return ResponseEntity.ok(orderService.closeOrder(orderService.findByID(id)));
     }
 
     @PatchMapping("/updateOrder/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable("id")int id, @RequestBody UpdateOrderRequest updateOrderRequest)
+    public ResponseEntity<Order> updateOrder(@PathVariable("id")Long id, @RequestBody UpdateOrderRequest updateOrderRequest)
     {
         return ResponseEntity.ok(orderService.updateOrder(updateOrderRequest.getMealID(), updateOrderRequest.getComment(), orderService.findByID(id)));
     }
 
     @PatchMapping("/updateOrderNoComment/{id}")
-    public ResponseEntity<Order> updateOrderNoComment(@PathVariable("id")int id, @RequestBody NoCommentUpdate noCommentUpdate)
+    public ResponseEntity<Order> updateOrderNoComment(@PathVariable("id")Long id, @RequestBody NoCommentUpdate noCommentUpdate)
     {
         return ResponseEntity.ok(orderService.updateOrderNoComment(noCommentUpdate.getMealID(), orderService.findByID(id)));
     }
@@ -71,11 +71,22 @@ public class OrderController
     }
 
     @DeleteMapping("/deleteOrder/{id}")
-    public ResponseEntity<String> deleteOrderById(@PathVariable("id") int id)
+    public ResponseEntity<String> deleteOrderById(@PathVariable("id") Long id)
     {
+        this.orderService.deleteOrderMealsByOrderId(id);
         this.orderService.deleteOrder(id);
+
         return ResponseEntity.ok().body("Order deleted");
     }
+
+    @DeleteMapping("/deleteOrderMeals/{id}")
+    public ResponseEntity<String> deleteOrderMealsByOrderId(@PathVariable("id") Long id)
+    {
+        this.orderService.deleteOrderMealsByOrderId(id);
+
+        return ResponseEntity.ok().body("OrderMeals deleted");
+    }
+
 
     @DeleteMapping("/deleteOrderMeal/{id}")
     public ResponseEntity<String> deleteOrderMealById(@PathVariable("id") Long id)
