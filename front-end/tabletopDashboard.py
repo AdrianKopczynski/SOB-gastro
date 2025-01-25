@@ -111,7 +111,7 @@ class TabletopDashboard(tk.Frame):
 
     def create_order(self):
         self.manager.current_table_id = self.table_id
-        self.manager.switch_to("OrderEditor", table_name=self.table_name)
+        self.manager.switch_to("OrderEditor", table_name=self.table_name, tableId = self.table_id)
 
     def edit_order(self):
         selected_item = self.orders_list.selection()
@@ -130,7 +130,7 @@ class TabletopDashboard(tk.Frame):
             return
 
         self.manager.current_table_id = self.table_id
-        self.manager.switch_to("OrderEditor", order=selected_order, table_name=self.table_name)
+        self.manager.switch_to("OrderEditor", order=selected_order, table_name=self.table_name, tableId = self.table_id)
 
     def delete_order(self):
         selected_item = self.orders_list.selection()
@@ -141,17 +141,10 @@ class TabletopDashboard(tk.Frame):
         order_id = self.orders_list.item(selected_item)["values"][0]
 
         if messagebox.askyesno("Confirm", f"Are you sure you want to delete order {order_id}?"):
-            with open(ORDERS_FILE, "r", encoding="utf-8") as file:
-                all_orders = json.load(file)
-
-            updated_orders = [order for order in all_orders if order["order_id"] != order_id]
-            self.save_orders(updated_orders)
-            self.load_orders()
-
-            self.request_handler.delete_order(order_id)
-            print(f"Order {order_id} deleted.")
-
-
+            try:
+                rh.delete_order(db,order_id)
+            except HTTPError as e:
+                print(f"Error: {e}")
 
     def close_order(self):
         selected_item = self.orders_list.selection()
