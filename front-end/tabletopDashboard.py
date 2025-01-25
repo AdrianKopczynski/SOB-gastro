@@ -101,7 +101,7 @@ class TabletopDashboard(tk.Frame):
             print(f"Error while loading meals, error message: {err}")
             self.orders_list = []
 
-        self.current_orders = [order for order in data if order["tabletop"]["id"] == self.table_id]
+        self.current_orders = [order for order in data if order["tabletop"] == self.table_id]
         self.orders_list.delete(*self.orders_list.get_children())
         for order in self.current_orders:
             if order["user"]["id"] == self.userId:
