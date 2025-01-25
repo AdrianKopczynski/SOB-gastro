@@ -158,10 +158,19 @@ class RequestHandler:
         return self.send_post_request("order/updateOrder", {"order_id": order_id, **updated_data})
 
     def delete_order(self, order_id):
-        return self.send_delete_request("order/deleteOrder", {"order_id": order_id})
+        return self.send_delete_request(f"order/deleteOrder/{order_id}")
+    
+    def add_order(self,order):
+        return self.send_post_request(f"order/createOrderNoComment", order)
     
     def get_order_meals(self, id):
         return self.send_get_request(f"order/getOrderMeals/{id}")
+    
+    def add_order_meals(self,id,data):
+        return self.send_patch_request(f"order/updateOrderNoComment/{id}", data)
+    
+    def delete_order_meals(self,id,data):
+        return self.send_delete_request(f"order/deleteOrderMeal/{id}", data)
     
     def close_order(self,id):
         return self.send_post_request(f"order/closeOrder/{id}")
