@@ -155,8 +155,8 @@ class RequestHandler:
     def create_order(self, order_data):
         return self.send_post_request("order/createOrder", order_data)
 
-    def edit_order(self, order_id, updated_data):
-        return self.send_post_request("order/updateOrder", {"order_id": order_id, **updated_data})
+    def update_order_comment(self, order_id, comment):
+        return self.send_patch_request(f"order/updateOrderComment/{order_id}",comment)
 
     def delete_order(self, order_id):
         return self.send_delete_request(f"order/deleteOrder/{order_id}")
