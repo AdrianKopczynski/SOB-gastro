@@ -43,7 +43,6 @@ class TabletopDashboard(tk.Frame):
         buttons_frame = tk.Frame(self)
         buttons_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
 
-
         buttons_frame.grid_rowconfigure(0, weight=1)
         buttons_frame.grid_rowconfigure(6, weight=1)
         buttons_frame.grid_columnconfigure(0, weight=1)
