@@ -81,6 +81,17 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    public Order updateOrderComment(String comment, Order order)
+    {
+        if(order.isClosed())
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "cannot update closed order with id " + order.getId());
+        }
+        order.setComment(comment);
+        return orderRepository.save(order);
+    }
+
     public void printOrder(Order order)
     {
         System.out.println(order);
