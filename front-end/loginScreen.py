@@ -36,10 +36,6 @@ class LoginScreen(tk.Frame):
 
         tk.Label(center_frame, text="ZALOGUJ", font=("Arial", 45), fg="black").grid(row=0, column=0, columnspan=3, pady=20)
 
-        
-
-        
-
         row, column = 1, 0
         for x in range(1, 10):
             tk.Button(center_frame, text=f"{x}", fg="white", bg="gray", activebackground="gray",

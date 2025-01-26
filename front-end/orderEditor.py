@@ -156,7 +156,7 @@ class OrderEditor(tk.Frame):
             "mealID": meals,
             "user": user,
             
-            "comment": comment,
+            "comment": new_comment,
             "tabletop": self.manager.current_table_id,
             "closed": False
         }
@@ -273,6 +273,10 @@ class OrderEditor(tk.Frame):
                 id = [meal["id"] for meal in rh.get_order_meals(db,self.order["id"]) if ids == meal["mealId"]]
                 print(id)
                 rh.delete_order_meals(db,id[0])
+        comment = {
+            "comment": self.comment_text.get("1.0", tk.END).strip()
+        }
+        rh.update_order_comment(db,self.order["id"],comment)
 
         self.manager.switch_to("TabletopDashboard",
                             table_id=self.manager.current_table_id,
