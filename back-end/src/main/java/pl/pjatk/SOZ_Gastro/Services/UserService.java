@@ -1,10 +1,14 @@
 package pl.pjatk.SOZ_Gastro.Services;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pl.pjatk.SOZ_Gastro.Enums.UserType;
 import pl.pjatk.SOZ_Gastro.Exceptions.UserNotFoundException;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
+import pl.pjatk.SOZ_Gastro.Repositories.OrderMealRepository;
+import pl.pjatk.SOZ_Gastro.Repositories.OrderRepository;
 import pl.pjatk.SOZ_Gastro.Repositories.UserRepository;
 import pl.pjatk.SOZ_Gastro.Exceptions.BadRequestException;
 
@@ -15,11 +19,16 @@ public class UserService
 {
     private final RestTemplate restTemplate;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
+    private final OrderMealRepository orderMealRepository;
 
-    public UserService(RestTemplate restTemplate, UserRepository userRepository)
+    public UserService(RestTemplate restTemplate, UserRepository userRepository, OrderMealRepository orderMealRepository, OrderRepository orderRepository)
     {
         this.restTemplate = restTemplate;
         this.userRepository = userRepository;
+        this.orderRepository = orderRepository;
+        this.orderMealRepository = orderMealRepository;
+
     }
 
     public User createUser(User user) throws BadRequestException {
@@ -77,13 +86,25 @@ public class UserService
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
-    public void deleteUserById(Long id) throws UserNotFoundException
-    {
-        if (id == null)
-        {
+    @Transactional
+    public void deleteUserById(Long id) throws UserNotFoundException {
+        if (id == null) {
             throw new IllegalArgumentException("Id cannot be null");
         }
-        getById(id);
+
+        User userToDelete = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
+
+        User defaultUser = userRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Default user with id 1 not found"));
+
+        List<Order> orders = orderRepository.findAllByUserId(id);
+
+        for (Order order : orders) {
+            order.setUser(defaultUser);
+            orderRepository.save(order);
+        }
+
         userRepository.deleteById(id);
     }
 
