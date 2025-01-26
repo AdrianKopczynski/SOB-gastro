@@ -3,11 +3,8 @@ package pl.pjatk.SOZ_Gastro.Controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.OrderMeal;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.CreateOrderRequest;
+import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.*;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Order;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.NoCommentRequest;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.NoCommentUpdate;
-import pl.pjatk.SOZ_Gastro.ObjectClasses.Requests.UpdateOrderRequest;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.Tabletop;
 import pl.pjatk.SOZ_Gastro.ObjectClasses.User;
 import pl.pjatk.SOZ_Gastro.Services.OrderService;
@@ -62,6 +59,11 @@ public class OrderController
     public ResponseEntity<Order> updateOrderNoComment(@PathVariable("id")Long id, @RequestBody NoCommentUpdate noCommentUpdate)
     {
         return ResponseEntity.ok(orderService.updateOrderNoComment(noCommentUpdate.getMealID(), orderService.findByID(id)));
+    }
+    @PatchMapping("/updateOrderComment/{id}")
+    public ResponseEntity<Order> updateOrderComment(@PathVariable("id")Long id, @RequestBody CommentUpdate commentUpdate)
+    {
+        return ResponseEntity.ok(orderService.updateOrderComment(commentUpdate.getComment(), orderService.findByID(id)));
     }
 
     @GetMapping("/getOrderMeals/{id}")
