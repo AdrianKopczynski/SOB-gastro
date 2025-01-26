@@ -1,11 +1,21 @@
 import tkinter as tk
 from tkinter import ttk
+from requestHandler import RequestHandler as rh
+import json
+
+try:
+    with open('config.json', "r", encoding="utf-8") as file:
+        config = json.load(file)
+        db = rh(config[0]['connection_addr'])
+except FileNotFoundError:
+    print("Cannot get connection adress!")
 
 class OrderSummary(tk.Frame):
     def __init__(self, master, manager, order, table_name):
         super().__init__(master)
         self.manager = manager
-        self.order = order
+        self.order = order[0]
+        self.orderId = self.order["id"]
         self.table_name = table_name
         self.create_widgets()
 
@@ -44,8 +54,10 @@ class OrderSummary(tk.Frame):
         scrollbar.config(command=order_table.yview)
 
         total_price = 0
-        if "meals" in self.order:
-            for meal in self.order["meals"]:
+        ids = [entry["mealId"] for entry in rh.get_order_meals(db,self.orderId)]
+        meals = [meal for meal in rh.get_all_meals(db) if meal["id"] in ids]
+        if len(ids) > 0:
+            for meal in meals:
                 order_table.insert("", "end", values=(meal["name"], meal.get("quantity", 1), f"{meal['price']} PLN"))
                 total_price += meal.get("quantity", 1) * meal["price"]
         else:
@@ -65,4 +77,5 @@ class OrderSummary(tk.Frame):
         spacer_frame.grid(row=4, column=1, sticky="nsew")
 
     def redirect_to_tables(self):
+        rh.close_order(db,self.orderId)
         self.manager.switch_to("TabletopEditor")

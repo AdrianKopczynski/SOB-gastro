@@ -54,7 +54,7 @@ class TabletopEditor(tk.Frame):
         if name is None or name.strip() == "":
             return
 
-        size = 50
+        size = 150
         x = 100
         y = 100
         color = "blue"

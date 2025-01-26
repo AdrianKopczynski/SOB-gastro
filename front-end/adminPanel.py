@@ -4,6 +4,7 @@ from requestHandler import RequestHandler as rh
 import json
 import os
 from urllib.error import HTTPError
+import time
 
 base_dir = os.path.dirname(os.path.abspath(__file__)) #poki operujemy na plikach to dodaje bo jesli uzywas vscode a pycharma to inaczej pliki moze struturyzowac
 file_path = os.path.join(base_dir, 'users2.json')
@@ -96,7 +97,7 @@ class AdminPanel(tk.Frame):
             ("Usuń użytkownika", self.delete_user),
         ]
 
-        for idx, (label, command) in enumerate(actions):
+        for idx,(label, command) in enumerate(actions):
             tk.Button(buttons_frame, text=label, font=("Arial", 16), bg="gray", fg="white",
                     width=15, height=2, command=command).pack(pady=10)
 
@@ -124,8 +125,8 @@ class AdminPanel(tk.Frame):
 
         self.load_users()
 
-        self.dynamic_frame = tk.Frame(frame, bg="white", relief="sunken", bd=2, width=300)
-        self.dynamic_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
+        self.user_dynamic_frame = tk.Frame(frame, bg="white", relief="sunken", bd=2, width=300)
+        self.user_dynamic_frame.grid(row=1, column=2, sticky="nsew", padx=10, pady=10)
 
         buttons_frame.grid_propagate(False)
         users_frame.grid_propagate(False)  
@@ -139,6 +140,8 @@ class AdminPanel(tk.Frame):
 
         self.users_listbox.delete(*self.users_listbox.get_children())
         for user in users:
+            if user['username'] == 'admin':
+                continue
             self.users_listbox.insert(
                 "", "end", values=(user['id'], user['username'], user['userType'], "Tak" if user['enabled'] else "Nie")
             )
@@ -168,21 +171,21 @@ class AdminPanel(tk.Frame):
             self.category_table = []
 
     def show_add_user_form(self):
-        """for widget in self.dynamic_frame.winfo_children():
-            widget.destroy()"""
+        for widget in self.user_dynamic_frame.winfo_children():
+            widget.destroy()
 
-        tk.Label(self.dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
+        tk.Label(self.user_dynamic_frame, text="Dodaj użytkownika", font=("Arial", 18)).pack(pady=10)
 
-        tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
-        username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
+        username_entry = tk.Entry(self.user_dynamic_frame, font=("Arial", 14))
         username_entry.pack(pady=5)
     
-        tk.Label(self.dynamic_frame, text="PIN (4 cyfry):", font=("Arial", 14)).pack(pady=5)
-        pin_entry = tk.Entry(self.dynamic_frame, show="*", font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="PIN (4 cyfry):", font=("Arial", 14)).pack(pady=5)
+        pin_entry = tk.Entry(self.user_dynamic_frame, show="*", font=("Arial", 14))
         pin_entry.pack(pady=5)
 
-        tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
-        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
+        user_type_combo = ttk.Combobox(self.user_dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
         user_type_combo.pack(pady=5)
 
         def submit():
@@ -191,20 +194,20 @@ class AdminPanel(tk.Frame):
             user_type = user_type_combo.get()
 
             if not user_name or not login_pin or not user_type:
-                tk.Label(self.dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             if len(login_pin) != 4 or not login_pin.isdigit():
-                tk.Label(self.dynamic_frame, text="PIN musi składać się z 4 cyfr!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="PIN musi składać się z 4 cyfr!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             # if self.request_handler.check_user_exists(user_name):
             if self.check_username_exists(user_name):
-                tk.Label(self.dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
             
             if self.check_pin_exists(login_pin):
-                tk.Label(self.dynamic_frame, text="Pin jest już w użyciu!", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Pin jest już w użyciu!", fg="red", font=("Arial", 12)).pack(pady=5)
                 return
 
             new_user = {
@@ -217,53 +220,46 @@ class AdminPanel(tk.Frame):
 
             if success:
                 self.load_users()
-                tk.Label(self.dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Użytkownik dodany!", fg="green", font=("Arial", 12)).pack(pady=5)
             else:
-                tk.Label(self.dynamic_frame, text="Nie udało się dodać użytkownika.", fg="red", font=("Arial", 12)).pack(pady=5)
+                tk.Label(self.user_dynamic_frame, text="Nie udało się dodać użytkownika.", fg="red", font=("Arial", 12)).pack(pady=5)
         
-        tk.Button(self.dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+        tk.Button(self.user_dynamic_frame, text="Dodaj", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
 
     def delete_user(self):
         selected_item = self.users_listbox.selection()
         if selected_item:
             user_id = int(self.users_listbox.item(selected_item, "values")[0])
 
-            self.clear_dynamic_frame()
-            tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć użytkownika o ID {user_id}?",
+            self.clear_user_dynamic_frame()
+            tk.Label(self.user_dynamic_frame, text=f"Czy na pewno chcesz usunąć użytkownika o ID {user_id}?",
                     font=("Arial", 12), fg="red").pack(pady=10)
 
             def confirm_deletion():
                 try:
-                    """with open(file_path, 'r', encoding='utf-8') as f:
-                        users = json.load(f)
-
-                    updated_users = [user for user in users if user["user_id"] != user_id]
-
-                    with open(file_path, 'w', encoding='utf-8') as f:
-                        json.dump(updated_users, f, indent=4)"""
                     rh.delete_user_by_id(db, user_id)
 
                     self.load_users()
 
-                    self.clear_dynamic_frame()
-                    success_label = tk.Label(self.dynamic_frame, text=f"Użytkownik o ID {user_id} został usunięty.",
+                    self.clear_user_dynamic_frame()
+                    success_label = tk.Label(self.user_dynamic_frame, text=f"Użytkownik o ID {user_id} został usunięty.",
                                             font=("Arial", 12), fg="green")
                     success_label.pack(pady=10)
 
                     self.after(3000, lambda: success_label.destroy())
 
                 except FileNotFoundError:
-                    error_label = tk.Label(self.dynamic_frame, text="Plik z użytkownikami nie istnieje.",
+                    error_label = tk.Label(self.user_dynamic_frame, text="Plik z użytkownikami nie istnieje.",
                                         font=("Arial", 12), fg="red")
                     error_label.pack(pady=10)
                     self.after(3000, lambda: error_label.destroy())
 
-            tk.Button(self.dynamic_frame, text="Usun", command=confirm_deletion,
+            tk.Button(self.user_dynamic_frame, text="Usun", command=confirm_deletion,
                     fg="white", bg="red", font=("Arial", 12)).pack(pady=10)
 
         else:
-            self.clear_dynamic_frame()
-            warning_label = tk.Label(self.dynamic_frame, text="Proszę wybrać użytkownika do usunięcia.",
+            self.clear_user_dynamic_frame()
+            warning_label = tk.Label(self.user_dynamic_frame, text="Proszę wybrać użytkownika do usunięcia.",
                                     fg="red", font=("Arial", 12))
             warning_label.pack(pady=5)
             self.after(3000, lambda: warning_label.destroy())
@@ -278,52 +274,72 @@ class AdminPanel(tk.Frame):
         user_data = self.users_listbox.item(selected_item, "values")
         user_id, username, user_type = user_data[:3]
 
-        for widget in self.dynamic_frame.winfo_children():
+        for widget in self.user_dynamic_frame.winfo_children():
             widget.destroy()
 
-        tk.Label(self.dynamic_frame, text="Edytuj użytkownika", font=("Arial", 18)).pack(pady=10)
+        tk.Label(self.user_dynamic_frame, text="Edytuj użytkownika", font=("Arial", 18)).pack(pady=10)
 
-        tk.Label(self.dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
-        username_entry = tk.Entry(self.dynamic_frame, font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="Nazwa użytkownika:", font=("Arial", 14)).pack(pady=5)
+        username_entry = tk.Entry(self.user_dynamic_frame, font=("Arial", 14))
         username_entry.insert(0, username)
         username_entry.pack(pady=5)
 
-        tk.Label(self.dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
-        user_type_combo = ttk.Combobox(self.dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
+        tk.Label(self.user_dynamic_frame, text="PIN (4 cyfry):", font=("Arial", 14)).pack(pady=5)
+        pin_entry = tk.Entry(self.user_dynamic_frame, show="*", font=("Arial", 14))
+        pin_entry.pack(pady=5)
+
+        tk.Label(self.user_dynamic_frame, text="Typ użytkownika:", font=("Arial", 14)).pack(pady=5)
+        user_type_combo = ttk.Combobox(self.user_dynamic_frame, values=["Cashier", "Inventory", "Admin"], font=("Arial", 14))
         user_type_combo.set(user_type)
         user_type_combo.pack(pady=5)
 
         def submit():
             new_username = username_entry.get().strip()
             new_user_type = user_type_combo.get()
+            new_login_pin = pin_entry.get().strip()
 
             if not new_username or not new_user_type:
                 messagebox.showerror("Błąd", "Wszystkie pola są wymagane!")
                 return
 
             try:
-                with open("users2.json", "r", encoding="utf-8") as f:
-                    users = json.load(f)
 
-                for user in users:
-                    if user["id"] == int(user_id):
-                        user["username"] = new_username
-                        user["userType"] = new_user_type
-                        break
+                if not new_username or not new_login_pin or not new_user_type:
+                    tk.Label(self.user_dynamic_frame, text="Wszystkie pola są wymagane!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
 
-                with open("users2.json", "w", encoding="utf-8") as f:
-                    json.dump(users, f, indent=4)
+                if len(new_login_pin) != 4 or not new_login_pin.isdigit():
+                    tk.Label(self.user_dynamic_frame, text="PIN musi składać się z 4 cyfr!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
+
+                if self.check_username_exists(new_username):
+                    tk.Label(self.user_dynamic_frame, text="Użytkownik o tej nazwie już istnieje!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
+                
+                if self.check_pin_exists(new_login_pin):
+                    tk.Label(self.user_dynamic_frame, text="Pin jest już w użyciu!", fg="red", font=("Arial", 12)).pack(pady=5)
+                    return
+
+                new_user = {
+                    "loginPin": int(new_login_pin),
+                    "userType": new_user_type,
+                    "enabled": "True"
+                }
+                old_user = rh.get_user_by_username(db,username)
+                pin = old_user["loginPin"]
+                rh.update_username(db,username,new_username)
+                rh.update_user(db,new_username,pin,new_user)
 
                 self.load_users()
                 messagebox.showinfo("Sukces", "Użytkownik został zaktualizowany.")
 
-            except FileNotFoundError:
-                messagebox.showerror("Błąd", "Plik u nie istnieje.")
+            except HTTPError:
+                messagebox.showinfo("Błądu", "Nie udało się zaktualizować użytkownika.")
 
-        tk.Button(self.dynamic_frame, text="Zapisz", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
+        tk.Button(self.user_dynamic_frame, text="Zapisz", font=("Arial", 14), bg="green", fg="white", command=submit).pack(pady=10)
 
-    def clear_dynamic_frame(self):
-        for widget in self.dynamic_frame.winfo_children():
+    def clear_user_dynamic_frame(self):
+        for widget in self.user_dynamic_frame.winfo_children():
             widget.destroy()
 
     def check_username_exists(self, userName):
@@ -442,13 +458,21 @@ class AdminPanel(tk.Frame):
 
         category_name = self.category_table.item(selected_item, "values")[0]
         self.clear_dynamic_frame()
-
+        id = [entry["id"] for entry in rh.get_categories_list(db) if entry["name"] == category_name]
         tk.Label(self.dynamic_frame, text=f"Czy na pewno chcesz usunąć kategorię '{category_name}'?", font=("Arial", 14), fg="red").pack(pady=10)
 
         def confirm():
-            self.categories.remove(category_name)
-            self.category_table.delete(selected_item)
-            self.display_message("Sukces", "Kategoria została usunięta.")
+            if category_name == "BRAK":
+                self.display_message("Błąd", "Nie można usunąć tej kategorii.")
+            else:
+                try:
+                    rh.delete_category(db,id[0])
+                except HTTPError:
+                    self.display_message("Błąd", "Nie udało się usunać kategorii.")
+                else:
+                    self.display_message("Sukces", "Kategoria została usunięta.")
+                    self.load_categories()
+                    self.load_meals()
 
         tk.Button(self.dynamic_frame, text="Tak", font=("Arial", 14), bg="green", fg="white", command=confirm).pack(padx=10, pady=10)
         tk.Button(self.dynamic_frame, text="Nie", font=("Arial", 14), bg="red", fg="white", command=self.clear_dynamic_frame).pack(padx=10, pady=10)
@@ -508,7 +532,7 @@ class AdminPanel(tk.Frame):
         meal_price_entry.insert(0, meal_price.replace(" PLN", ""))
         meal_price_entry.pack(pady=5)
         tk.Label(self.dynamic_frame, text="Kategoria", font=("Arial", 14)).pack(pady=5)
-        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=self.categories, font=("Arial", 14))
+        meal_category_combo = ttk.Combobox(self.dynamic_frame, values=[entry["name"] for entry in rh.get_categories_list(db)], font=("Arial", 14))
         meal_category_combo.set(meal_category)
         meal_category_combo.pack(pady=5)
 
