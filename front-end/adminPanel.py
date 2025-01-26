@@ -237,13 +237,6 @@ class AdminPanel(tk.Frame):
 
             def confirm_deletion():
                 try:
-                    """with open(file_path, 'r', encoding='utf-8') as f:
-                        users = json.load(f)
-
-                    updated_users = [user for user in users if user["user_id"] != user_id]
-
-                    with open(file_path, 'w', encoding='utf-8') as f:
-                        json.dump(updated_users, f, indent=4)"""
                     rh.delete_user_by_id(db, user_id)
 
                     self.load_users()

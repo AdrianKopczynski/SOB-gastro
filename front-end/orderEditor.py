@@ -263,16 +263,16 @@ class OrderEditor(tk.Frame):
                 positive_difference.remove(entry)
 
         positiveData = {
-            "mealId" : positive_difference
+            "mealID" : positive_difference
         }
-        #print(positiveData)  
+        print(positiveData)
         if positive_difference:
             rh.add_order_meals(db,self.order["id"],positiveData)
         if negative_difference:
-            rh.delete_order_meals(db,self.order["id"],negative_difference)
-
-        #print(f"Positive difference: {positive_difference}")
-        #print(f"Negative difference: {negative_difference}")
+            for ids in negative_difference:
+                id = [meal["id"] for meal in rh.get_order_meals(db,self.order["id"]) if ids == meal["mealId"]]
+                print(id)
+                rh.delete_order_meals(db,id[0])
 
         self.manager.switch_to("TabletopDashboard",
                             table_id=self.manager.current_table_id,

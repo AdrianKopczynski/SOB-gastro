@@ -20,6 +20,7 @@ class LoginScreen(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
+        
         for i in range(3):  
             self.grid_rowconfigure(i, weight=1)
         for j in range(3):  
@@ -35,19 +36,15 @@ class LoginScreen(tk.Frame):
 
         tk.Label(center_frame, text="ZALOGUJ", font=("Arial", 45), fg="black").grid(row=0, column=0, columnspan=3, pady=20)
 
-        def display_pin(number):
-            self.value += str(number)
-            self.pin_label.config(text="*" * len(self.value))
+        
 
-        def clear_pin():
-            self.value = ""
-            self.pin_label.config(text="")
+        
 
         row, column = 1, 0
         for x in range(1, 10):
             tk.Button(center_frame, text=f"{x}", fg="white", bg="gray", activebackground="gray",
                     activeforeground="white", font=("Arial", 15), width=10, height=4,
-                    command=lambda x=x: display_pin(x)).grid(row=row, column=column, sticky="nsew", padx=5, pady=5)
+                    command=lambda x=x: self.display_pin(x)).grid(row=row, column=column, sticky="nsew", padx=5, pady=5)
             column += 1
             if column == 3:
                 column = 0
@@ -56,7 +53,38 @@ class LoginScreen(tk.Frame):
         self.pin_label = tk.Label(center_frame, font=("Arial", 30), fg="black", text="", bg="lightgray", relief="solid")
         self.pin_label.grid(row=4, column=0, columnspan=3, pady=20, sticky="ew")
 
-        def submit_pin():
+        
+
+        tk.Button(center_frame, 
+                  text="SUBMIT", 
+                  fg="white", bg="green", 
+                  font=("Arial", 15), 
+                  width=10, height=2,
+                  activebackground="white", activeforeground="lightgreen",
+                  command=self.submit_pin).grid(row=5, column=1, pady=10)
+        tk.Button(center_frame, 
+                  text="CLEAR", 
+                  fg="white", bg="red", 
+                  font=("Arial", 15), 
+                  width=10, height=2,
+                  activebackground="white", activeforeground="lightgreen",
+                  command=self.clear_pin).grid(row=5, column=2, pady=10)
+        
+        def bind_keys():
+
+            self.master.bind('<BackSpace>', lambda event: self.clear_pin())
+
+            self.master.bind('<Return>', lambda event: self.submit_pin())
+
+            for i in range(1, 10):
+                self.master.bind(str(i), lambda event, num=i: self.display_pin(num))
+        bind_keys()
+
+    def display_pin(self, number):
+            self.value += str(number)
+            self.pin_label.config(text="*" * len(self.value))
+
+    def submit_pin(self):
             data = self.check_pin(self.value)
             try:
                 username = data[0]
@@ -72,20 +100,10 @@ class LoginScreen(tk.Frame):
                 self.value = ""
                 self.pin_label.config(text="Błędny PIN")
 
-        tk.Button(center_frame, 
-                  text="SUBMIT", 
-                  fg="white", bg="green", 
-                  font=("Arial", 15), 
-                  width=10, height=2,
-                  activebackground="white", activeforeground="lightgreen",
-                  command=submit_pin).grid(row=5, column=1, pady=10)
-        tk.Button(center_frame, 
-                  text="CLEAR", 
-                  fg="white", bg="red", 
-                  font=("Arial", 15), 
-                  width=10, height=2,
-                  activebackground="white", activeforeground="lightgreen",
-                  command=clear_pin).grid(row=5, column=2, pady=10)
+    def clear_pin(self):
+            self.value = ""
+            self.pin_label.config(text="")
+
 
     def check_pin(self, pin):
         try:

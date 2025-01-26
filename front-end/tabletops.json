@@ -1,34 +1,34 @@
 [
     {
         "id": 1,
-        "name": "3",
+        "name": "Okno_Wyj\u015bcie",
         "color": "blue",
-        "x": 1020.0,
-        "y": 170.0,
-        "size": 50
+        "x": 1459.0,
+        "y": 180.0,
+        "size": 150
     },
     {
         "id": 2,
-        "name": "brembor",
+        "name": "Sala_1",
         "color": "#f54bf5",
-        "x": 583.0,
-        "y": 149.0,
-        "size": 50
+        "x": 783.0,
+        "y": 324.0,
+        "size": 150
     },
     {
         "id": 3,
-        "name": "123123123",
+        "name": "Okno",
         "color": "blue",
-        "x": 666.0,
-        "y": 478.0,
-        "size": 50
+        "x": 84.0,
+        "y": 228.0,
+        "size": 150
     },
     {
-        "id": 4,
-        "name": "22",
+        "id": 6,
+        "name": "Sala_Drzwi",
         "color": "blue",
-        "x": 1015.0,
-        "y": 505.0,
-        "size": 50
+        "x": 780.0,
+        "y": 29.0,
+        "size": 150
     }
 ]

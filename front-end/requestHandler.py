@@ -58,11 +58,12 @@ class RequestHandler:
             response = requests.patch(url, json=data)
             response.raise_for_status()
             return response.json()
-        except requests.exceptions.HTTPError as http_e:
-            print(f"HTTP error occurred: {http_e}")
-            raise HTTPError(url='http://localhost:10000/management/addCategory', code='400', msg="Error", hdrs="", fp="")
-        except Exception as e:
-            print(f"Other error occurred: {e}")
+        except requests.exceptions.HTTPError as err:
+            print(f"HTTP error occurred: {err}")
+            print(f"Response status code: {response.status_code}")
+            print(f"Response text: {response.text}")
+        except requests.exceptions.RequestException as err:
+            print(f"Request failed: {err}")
         return None
 
     def send_put_request(self, endpoint, data, headers=None):
@@ -167,10 +168,10 @@ class RequestHandler:
         return self.send_get_request(f"order/getOrderMeals/{id}")
     
     def add_order_meals(self,id,data):
-        return self.send_patch_request(f"order/updateOrderNoComment/{id}", data)
+        self.send_patch_request(f"order/updateOrderNoComment/{id}", data)
     
-    def delete_order_meals(self,id,data):
-        return self.send_delete_request(f"order/deleteOrderMeal/{id}", data)
+    def delete_order_meals(self,id):
+        return self.send_delete_request(f"order/deleteOrderMeal/{id}")
     
     def close_order(self,id):
         return self.send_post_request(f"order/closeOrder/{id}")
